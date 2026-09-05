@@ -1,5 +1,5 @@
-// Semainier — cache applicatif (v20260905c)
-const CACHE = "semainier-v20260905c";
+// Semainier — cache applicatif (v20260905d)
+const CACHE = "semainier-v20260905d";
 const COQUILLE = ["./", "./index.html", "./manifest.webmanifest", "./icone-192.png", "./icone-512.png", "./icone-apple.png"];
 
 self.addEventListener("install", e => {

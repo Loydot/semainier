@@ -246,6 +246,7 @@ button{cursor:pointer}
 .prix-tab tfoot .gagnant{color:var(--accent)}
 .prix-tab tfoot .partiel{color:var(--ink-3);font-weight:400}
 .prix-tab tr.sansprix td:first-child{color:var(--ink-3)}
+.prix-actions{display:flex;align-items:center;gap:12px;padding:10px 18px 2px;flex-wrap:wrap}
 .prix-info{padding:10px 18px 0;font-size:12.5px;color:var(--ink-3);line-height:1.45}
 .prix-tab input.estimee{border-style:dashed;color:var(--ink-3)}
 .prix-tab input.estimee::placeholder{color:var(--cuivre);opacity:.85}
@@ -510,7 +511,7 @@ const AUJ=iso(new Date());
 
 /* ---------- état ---------- */
 const KEY="semainier-v2";
-let S={couverts:4,repas:{},done:{},portee:"semaine",vue:"mois",perso:[],prix:{}};
+let S={couverts:4,repas:{},done:{},portee:"semaine",vue:"mois",perso:[],prix:{},releves:null};
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||"null");
   if(s&&typeof s==="object")S=Object.assign(S,s);
@@ -911,8 +912,14 @@ const ENSEIGNES=[["inter","Intermarché"],["lidl","Lidl"],["carrefour","Carrefou
 const PRIX_REF={"Oignon|pièce":{"r":0.42,"e":{"inter":0.34,"lidl":0.1,"carrefour":0.41}},"Ail|gousse":{"r":0.06,"e":{"inter":0.05,"lidl":0.05,"carrefour":0.07,"leclerc":0.06}},"Carotte|pièce":{"r":0.23,"e":{"inter":0.23,"lidl":0.2,"carrefour":0.24,"leclerc":0.24}},"Carotte|g":{"r":1.93,"e":{"inter":1.89,"lidl":1.69,"carrefour":1.99,"leclerc":1.99}},"Pommes de terre|g":{"r":2.19,"e":{"inter":2.77,"lidl":1.75,"carrefour":2.79,"leclerc":2.47}},"Tomates|pièce":{"r":0.36,"e":{"inter":0.36,"lidl":0.24,"carrefour":0.54,"leclerc":0.24}},"Citron|pièce":{"r":0.39,"e":{"inter":0.34,"lidl":0.25,"carrefour":0.33}},"Citron vert|pièce":{"r":0.4,"e":{"inter":0.31,"leclerc":0.34}},"Courgette|pièce":{"r":0.62,"e":{"inter":0.6,"lidl":0.44,"carrefour":0.75,"leclerc":0.45}},"Aubergine|pièce":{"r":1.05,"e":{"inter":1,"lidl":0.87,"carrefour":0.94}},"Poivron|pièce":{"r":0.81,"e":{"inter":0.86,"lidl":0.49,"carrefour":0.81,"leclerc":1.35}},"Poireau|pièce":{"r":0.56,"e":{"inter":0.52,"lidl":0.37,"carrefour":0.6}},"Navet|pièce":{"r":0.44,"e":{"inter":0.43,"lidl":0.3,"carrefour":0.48,"leclerc":0.36}},"Échalote|pièce":{"r":0.32,"e":{"inter":0.19,"carrefour":0.32}},"Salade verte|pièce":{"r":1.29,"e":{"leclerc":2}},"Champignons de Paris|g":{"r":5.99,"e":{"inter":5.99,"lidl":7.16,"carrefour":6.24}},"Chou vert|pièce":{"r":2.6,"e":{"inter":0.98}},"Chou vert|g":{"r":2.89,"e":{"inter":1.09}},"Brocoli|g":{"r":3.84,"e":{"inter":3.59,"carrefour":2.99,"leclerc":5.38}},"Pomme|pièce":{"r":0.45,"e":{"inter":0.48,"lidl":0.3,"carrefour":0.45,"leclerc":0.44}},"Poire|pièce":{"r":0.6,"e":{"inter":0.73,"lidl":0.39,"carrefour":0.68}},"Orange|pièce":{"r":0.53,"e":{"inter":0.59,"lidl":0.44,"carrefour":0.5}},"Fraises|g":{"r":11.45,"e":{"carrefour":11}},"Concombre|pièce":{"r":0.8,"e":{"lidl":0.66,"carrefour":1.33}},"Avocat|pièce":{"r":1.2,"e":{"lidl":1.4,"carrefour":0.9,"leclerc":0.93}}};
 const uniteRef=u=>u==="g"?"kg":u==="ml"?"L":u;
 const enRef=(q,u)=>(u==="g"||u==="ml")?q/1000:q;   // quantité exprimée dans l'unité du prix
+const CARTE_PRIX={"Oignon|pièce":["en:onions",150],"Ail|gousse":["en:garlic",5],"Carotte|pièce":["en:carrots",120],"Carotte|g":["en:carrots"],"Pommes de terre|g":["en:potatoes"],"Tomates|pièce":["en:tomatoes",120],"Citron|pièce":["en:lemons",100],"Citron vert|pièce":["en:limes",80],"Courgette|pièce":["en:zucchini",250],"Aubergine|pièce":["en:aubergines",300],"Poivron|pièce":["en:peppers",180],"Poireau|pièce":["en:leeks",200],"Navet|pièce":["en:turnip",150],"Échalote|pièce":["en:shallots",40],"Salade verte|pièce":["en:lettuces",300],"Champignons de Paris|g":["en:mushrooms"],"Épinards frais|g":["en:spinachs"],"Chou vert|pièce":["en:cabbages",900],"Chou vert|g":["en:cabbages"],"Chou-fleur|g":["en:cauliflowers"],"Brocoli|g":["en:broccoli"],"Pomme|pièce":["en:apples",150],"Poire|pièce":["en:pears",160],"Orange|pièce":["en:oranges",180],"Fraises|g":["en:strawberries"],"Concombre|pièce":["en:cucumbers",350],"Potiron|g":["en:pumpkins"],"Céleri|pièce":["en:celery",400],"Céleri-rave|g":["en:celery"],"Avocat|pièce":["en:avocados",200],"Œufs|pièce":["en:chicken-eggs",60],"Beurre|g":["en:butters"],"Lait|ml":["en:milks"],"Crème liquide|ml":["en:creams"],"Crème épaisse|g":["en:creams"],"Crème épaisse|ml":["en:creams"],"Gruyère râpé|g":["en:grated-cheeses"],"Parmesan|g":["en:parmigiano-reggiano"],"Mozzarella|g":["en:mozzarella"],"Reblochon|g":["en:reblochon"],"Cheddar|g":["en:cheddar"],"Feta|g":["en:feta"],"Ricotta|g":["en:ricotta"],"Yaourt nature|pot":["en:plain-yogurts",125],"Fromage de chèvre|g":["en:goat-cheeses"],"Bœuf haché|g":["en:ground-beef"],"Bœuf à braiser|g":["en:beef"],"Steak de bœuf|g":["en:beef"],"Filet de poulet|g":["en:chicken-breasts"],"Cuisses de poulet|g":["en:chicken-legs"],"Lardons fumés|g":["en:lardons"],"Lard fumé|g":["en:lardons"],"Jambon blanc|tranche":["en:cooked-hams",40],"Saucisse de Toulouse|pièce":["en:sausages",120],"Merguez|pièce":["en:merguez",70],"Chair à saucisse|g":["en:sausages"],"Pavé de saumon|g":["en:salmons"],"Dos de cabillaud|g":["en:cods"],"Moules|g":["en:mussels"],"Crevettes|g":["en:shrimps"],"Thon|g":["en:canned-tuna"],"Farine|g":["en:wheat-flours"],"Sucre|g":["en:sugars"],"Riz basmati|g":["en:rices"],"Riz rond|g":["en:rices"],"Spaghetti|g":["en:spaghetti"],"Tagliatelles|g":["en:pastas"],"Fusilli|g":["en:pastas"],"Macaronis|g":["en:pastas"],"Pâtes|g":["en:pastas"],"Lentilles vertes du Puy|g":["en:lentils"],"Lentilles corail|g":["en:lentils"],"Pois chiches|g":["en:chickpeas"],"Haricots blancs|g":["en:white-beans"],"Haricots rouges|g":["en:kidney-beans"],"Tomates concassées|g":["en:crushed-tomatoes"],"Chocolat noir|g":["en:dark-chocolates"],"Olives noires|g":["en:black-olives"],"Olives vertes|g":["en:green-olives"],"Huile d'olive|ml":["en:olive-oils"],"Semoule|g":["en:semolina"],"Lait de coco|ml":["en:coconut-milks"],"Miel|g":["en:honeys"],"Cornichons|g":["en:pickles"],"Vin blanc sec|ml":["en:white-wines"],"Vin rouge|ml":["en:red-wines"],"Bière brune|ml":["en:beers"],"Pain de campagne|pièce":["en:breads",400],"Pain de mie|tranche":["en:sandwich-breads",30],"Tortillas de blé|pièce":["en:tortillas",45],"Frites surgelées|g":["en:french-fries"],"Petits pois|g":["en:peas"],"Pâte brisée|pièce":["en:shortcrust-pastries",230],"Pâte feuilletée|pièce":["en:puff-pastries",230]};
+const RELEVE_URL="https://prices.openfoodfacts.org/api/v1/prices";
+const MARQUES={inter:/intermarch|itm |netto/i,lidl:/lidl/i,carrefour:/carrefour/i,leclerc:/leclerc/i};
+const MARQUES_FR=/intermarch|lidl|carrefour|leclerc|auchan|super\s?u|hyper\s?u|casino|monoprix|franprix|cora|aldi|netto|g[ée]ant|utile|spar|match|colruyt/i;
+const mediane=t=>{if(!t.length)return null;const x=[...t].sort((a,b)=>a-b),m=x.length>>1;return x.length%2?x[m]:(x[m-1]+x[m])/2;};
+
 const prixDe=(k,e)=>{const l=S.prix[k];return l&&typeof l[e]==="number"?l[e]:null;};
-const prixRef=(k,e)=>{const r=PRIX_REF[k];if(!r)return null;if(r.e&&typeof r.e[e]==="number")return r.e[e];return typeof r.r==="number"?r.r:null;};
+const prixRef=(k,e)=>{const r=(S.releves&&S.releves.prix&&S.releves.prix[k])||PRIX_REF[k];if(!r)return null;if(r.e&&typeof r.e[e]==="number")return r.e[e];return typeof r.r==="number"?r.r:null;};
 const prixUtile=(k,e)=>{const p=prixDe(k,e);return p!==null?{v:p,estime:false}:(prixRef(k,e)!==null?{v:prixRef(k,e),estime:true}:null);};
 
 function chiffrage(){
@@ -956,6 +963,7 @@ function ouvrirPrix(){
   cible=null;editId=null;
   $("#choix").innerHTML=
     `<p class="prix-info">Saisis le prix ${lignes.some(l=>l.u==="g"||l.u==="ml")?"<b>au kilo ou au litre</b>, ":""}ou à la pièce — une seule fois, il est mémorisé pour les listes suivantes. Les valeurs <b class="estime">en cuivre</b> sont des relevés Open Food Facts de septembre 2026, utilisés tant que tu n'as rien saisi ; écris par-dessus pour tes vrais prix.</p>
+     <div class="prix-actions">${RELEVE_POSSIBLE?`<button class="bouton creux" id="rafraichir">Rafraîchir les relevés</button>`:""}<span class="ia-etat" id="prix-etat"></span></div>
      <div class="prix-tab"><table>
       <thead><tr><th>Article</th>${ENSEIGNES.map(([,l])=>`<th>${l}</th>`).join("")}</tr></thead>
       <tbody>`+lignes.map(l=>{
@@ -967,9 +975,64 @@ function ouvrirPrix(){
           }).join("")+`</tr>`;
       }).join("")+
       `</tbody><tfoot><tr id="prix-totaux"></tr></tfoot></table></div>`;
-  majTotaux();
+  majTotaux();etatReleve();
   $("#voile").hidden=false;
 }
+/* relevé en direct sur Open Prices — impossible dans l'artifact (requêtes réseau bloquées) */
+const RELEVE_POSSIBLE=!(window.claude&&window.claude.use);
+let releveEnCours=false;
+function dateFr(iso){const d=new Date(iso+"T12:00:00");return d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});}
+function etatReleve(){
+  const n=$("#prix-etat");if(!n)return;
+  n.textContent=S.releves?`Relevés du ${dateFr(S.releves.date)}`:"Relevés embarqués de septembre 2026";
+}
+async function rafraichirPrix(){
+  if(releveEnCours||!RELEVE_POSSIBLE)return;
+  const{lignes}=chiffrage();
+  const cats=[...new Set(lignes.map(l=>CARTE_PRIX[l.k]).filter(Boolean).map(c=>c[0]))];
+  if(!cats.length){toast("Aucun article de cette liste n'est suivi par Open Prices");return;}
+  releveEnCours=true;
+  const b=$("#rafraichir"),etat=$("#prix-etat");
+  if(b)b.disabled=true;
+  const maj={};let n=0,echecs=0;
+  try{
+    for(let i=0;i<cats.length;i++){
+      if(etat)etat.textContent=`Relevé en cours… ${i+1}/${cats.length}`;
+      let items=[];
+      try{
+        const r=await fetch(`${RELEVE_URL}?category_tag=${encodeURIComponent(cats[i])}&price_per=KILOGRAM&order_by=-date&size=100`,{headers:{Accept:"application/json"}});
+        if(!r.ok)throw new Error(r.status);
+        const j=await r.json();
+        items=(j.items||[]).filter(x=>x.currency==="EUR"&&x.price_per==="KILOGRAM"&&!x.price_is_discounted);
+      }catch(e){echecs++;continue;}
+      const marque=x=>(x.location&&(x.location.osm_brand||x.location.osm_name))||"";
+      const fr=items.filter(x=>MARQUES_FR.test(marque(x)));
+      if(fr.length<5)continue;
+      Object.entries(CARTE_PRIX).forEach(([art,[cat,poids]])=>{
+        if(cat!==cats[i])return;
+        const f=poids?poids/1000:1,arr=v=>v===null?null:Math.round(v*f*100)/100;
+        const e={};
+        Object.entries(MARQUES).forEach(([cle,re])=>{
+          const p=items.filter(x=>re.test(marque(x))).map(x=>x.price);
+          if(p.length>=2)e[cle]=arr(mediane(p));
+        });
+        const ref=arr(mediane(fr.map(x=>x.price)));
+        if(ref===null&&!Object.keys(e).length)return;
+        maj[art]={r:ref,...(Object.keys(e).length?{e}:{})};n++;
+      });
+    }
+    if(n){
+      S.releves={date:new Date().toISOString().slice(0,10),prix:Object.assign({},(S.releves&&S.releves.prix)||{},maj)};
+      save();ouvrirPrix();
+      toast(n+" article"+(n>1?"s":"")+" remis à jour");
+    }else{
+      if(b)b.disabled=false;
+      etatReleve();
+      toast(echecs?"Pas de réseau — relevés inchangés":"Pas assez de relevés récents");
+    }
+  }finally{releveEnCours=false;}
+}
+
 function majTotaux(){
   const{lignes,totaux}=chiffrage();
   const valeurs=ENSEIGNES.filter(([e])=>totaux[e].complet).map(([e])=>totaux[e].somme);
@@ -1045,6 +1108,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#remplir"))return remplir();
   if(e.target.closest("#effacer")){joursSemaine().forEach(j=>REPAS.forEach(([r])=>delete S.repas[j+"|"+r]));S.done["S:"+selLundi]=[];rendu();toast("Semaine vidée");return;}
   if(e.target.closest("#comparer"))return ouvrirPrix();
+  if(e.target.closest("#rafraichir"))return rafraichirPrix();
   if(e.target.closest("#decocher")){S.done[cleP()]=[];rendu();return;}
   if(e.target.closest("#copier"))return copier();
 });
