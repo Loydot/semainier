@@ -247,6 +247,9 @@ button{cursor:pointer}
 .prix-tab tfoot .partiel{color:var(--ink-3);font-weight:400}
 .prix-tab tr.sansprix td:first-child{color:var(--ink-3)}
 .prix-info{padding:10px 18px 0;font-size:12.5px;color:var(--ink-3);line-height:1.45}
+.prix-tab input.estimee{border-style:dashed;color:var(--ink-3)}
+.prix-tab input.estimee::placeholder{color:var(--cuivre);opacity:.85}
+.moinscher .estime,.prix-tab .estime{color:var(--cuivre);font-weight:400}
 
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:9px 17px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
 .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -903,9 +906,14 @@ function supprimer(){
 
 /* ---------- carnet de prix ---------- */
 const ENSEIGNES=[["inter","Intermarché"],["lidl","Lidl"],["carrefour","Carrefour"],["leclerc","Leclerc"]];
+/* prix relevés sur Open Prices (Open Food Facts) en septembre 2026, médiane par enseigne.
+   Ils servent d'estimation tant que tu n'as pas saisi les tiens. */
+const PRIX_REF={"Oignon|pièce":{"r":0.42,"e":{"inter":0.34,"lidl":0.1,"carrefour":0.41}},"Ail|gousse":{"r":0.06,"e":{"inter":0.05,"lidl":0.05,"carrefour":0.07,"leclerc":0.06}},"Carotte|pièce":{"r":0.23,"e":{"inter":0.23,"lidl":0.2,"carrefour":0.24,"leclerc":0.24}},"Carotte|g":{"r":1.93,"e":{"inter":1.89,"lidl":1.69,"carrefour":1.99,"leclerc":1.99}},"Pommes de terre|g":{"r":2.19,"e":{"inter":2.77,"lidl":1.75,"carrefour":2.79,"leclerc":2.47}},"Tomates|pièce":{"r":0.36,"e":{"inter":0.36,"lidl":0.24,"carrefour":0.54,"leclerc":0.24}},"Citron|pièce":{"r":0.39,"e":{"inter":0.34,"lidl":0.25,"carrefour":0.33}},"Citron vert|pièce":{"r":0.4,"e":{"inter":0.31,"leclerc":0.34}},"Courgette|pièce":{"r":0.62,"e":{"inter":0.6,"lidl":0.44,"carrefour":0.75,"leclerc":0.45}},"Aubergine|pièce":{"r":1.05,"e":{"inter":1,"lidl":0.87,"carrefour":0.94}},"Poivron|pièce":{"r":0.81,"e":{"inter":0.86,"lidl":0.49,"carrefour":0.81,"leclerc":1.35}},"Poireau|pièce":{"r":0.56,"e":{"inter":0.52,"lidl":0.37,"carrefour":0.6}},"Navet|pièce":{"r":0.44,"e":{"inter":0.43,"lidl":0.3,"carrefour":0.48,"leclerc":0.36}},"Échalote|pièce":{"r":0.32,"e":{"inter":0.19,"carrefour":0.32}},"Salade verte|pièce":{"r":1.29,"e":{"leclerc":2}},"Champignons de Paris|g":{"r":5.99,"e":{"inter":5.99,"lidl":7.16,"carrefour":6.24}},"Chou vert|pièce":{"r":2.6,"e":{"inter":0.98}},"Chou vert|g":{"r":2.89,"e":{"inter":1.09}},"Brocoli|g":{"r":3.84,"e":{"inter":3.59,"carrefour":2.99,"leclerc":5.38}},"Pomme|pièce":{"r":0.45,"e":{"inter":0.48,"lidl":0.3,"carrefour":0.45,"leclerc":0.44}},"Poire|pièce":{"r":0.6,"e":{"inter":0.73,"lidl":0.39,"carrefour":0.68}},"Orange|pièce":{"r":0.53,"e":{"inter":0.59,"lidl":0.44,"carrefour":0.5}},"Fraises|g":{"r":11.45,"e":{"carrefour":11}},"Concombre|pièce":{"r":0.8,"e":{"lidl":0.66,"carrefour":1.33}},"Avocat|pièce":{"r":1.2,"e":{"lidl":1.4,"carrefour":0.9,"leclerc":0.93}}};
 const uniteRef=u=>u==="g"?"kg":u==="ml"?"L":u;
 const enRef=(q,u)=>(u==="g"||u==="ml")?q/1000:q;   // quantité exprimée dans l'unité du prix
 const prixDe=(k,e)=>{const l=S.prix[k];return l&&typeof l[e]==="number"?l[e]:null;};
+const prixRef=(k,e)=>{const r=PRIX_REF[k];if(!r)return null;if(r.e&&typeof r.e[e]==="number")return r.e[e];return typeof r.r==="number"?r.r:null;};
+const prixUtile=(k,e)=>{const p=prixDe(k,e);return p!==null?{v:p,estime:false}:(prixRef(k,e)!==null?{v:prixRef(k,e),estime:true}:null);};
 
 function chiffrage(){
   const g=agreger(),lignes=[];
@@ -915,9 +923,12 @@ function chiffrage(){
   }));
   const totaux={};
   ENSEIGNES.forEach(([e])=>{
-    let somme=0,manque=0;
-    lignes.forEach(l=>{const p=prixDe(l.k,e);if(p===null)manque++;else somme+=p*l.q;});
-    totaux[e]={somme,manque,complet:lignes.length&&!manque};
+    let somme=0,manque=0,estimes=0;
+    lignes.forEach(l=>{
+      const p=prixUtile(l.k,e);
+      if(!p)manque++;else{somme+=p.v*l.q;if(p.estime)estimes++;}
+    });
+    totaux[e]={somme,manque,estimes,complet:lignes.length&&!manque};
   });
   return {lignes,totaux};
 }
@@ -932,7 +943,8 @@ function renduMoinsCher(){
   const gagnant=tries[0];
   const ecart=tries.length>1?tries[tries.length-1].v-gagnant.v:0;
   n.hidden=false;
-  n.innerHTML=`Moins cher : <b>${gagnant.l} ${euros(gagnant.v)}</b>`+(ecart>0.005?` — ${euros(ecart)} d'écart avec le plus cher`:"");
+  const est=totaux[gagnant.e].estimes;
+  n.innerHTML=`Moins cher : <b>${gagnant.l} ${euros(gagnant.v)}</b>`+(ecart>0.005?` — ${euros(ecart)} d'écart avec le plus cher`:"")+(est?` <span class="estime">(${est} prix estimé${est>1?"s":""})</span>`:"");
 }
 
 function ouvrirPrix(){
@@ -943,15 +955,15 @@ function ouvrirPrix(){
   document.querySelector("#voile h2").textContent="Comparer les enseignes";
   cible=null;editId=null;
   $("#choix").innerHTML=
-    `<p class="prix-info">Saisis le prix ${lignes.some(l=>l.u==="g"||l.u==="ml")?"<b>au kilo ou au litre</b>, ":""}ou à la pièce — une seule fois, il est mémorisé pour les listes suivantes. Un total ne s'affiche que si l'enseigne a tous les prix.</p>
+    `<p class="prix-info">Saisis le prix ${lignes.some(l=>l.u==="g"||l.u==="ml")?"<b>au kilo ou au litre</b>, ":""}ou à la pièce — une seule fois, il est mémorisé pour les listes suivantes. Les valeurs <b class="estime">en cuivre</b> sont des relevés Open Food Facts de septembre 2026, utilisés tant que tu n'as rien saisi ; écris par-dessus pour tes vrais prix.</p>
      <div class="prix-tab"><table>
       <thead><tr><th>Article</th>${ENSEIGNES.map(([,l])=>`<th>${l}</th>`).join("")}</tr></thead>
       <tbody>`+lignes.map(l=>{
-        const sans=ENSEIGNES.every(([e])=>prixDe(l.k,e)===null);
+        const sans=ENSEIGNES.every(([e])=>prixUtile(l.k,e)===null);
         return `<tr class="${sans?"sansprix":""}"><td>${l.nom}<span class="q2">${(Math.round(l.q*100)/100).toString().replace(".",",")} ${uniteRef(l.u)} · prix / ${uniteRef(l.u)}</span></td>`+
           ENSEIGNES.map(([e])=>{
-            const p=prixDe(l.k,e);
-            return `<td><input type="number" inputmode="decimal" step="0.01" min="0" data-prix="${l.k}" data-ens="${e}" value="${p===null?"":p}" aria-label="${l.nom} chez ${e}"></td>`;
+            const p=prixDe(l.k,e),r=prixRef(l.k,e);
+            return `<td><input type="number" inputmode="decimal" step="0.01" min="0" class="${p===null&&r!==null?"estimee":""}" data-prix="${l.k}" data-ens="${e}" value="${p===null?"":p}" placeholder="${r===null?"":r}" aria-label="${l.nom} chez ${e}"></td>`;
           }).join("")+`</tr>`;
       }).join("")+
       `</tbody><tfoot><tr id="prix-totaux"></tr></tfoot></table></div>`;
@@ -968,7 +980,7 @@ function majTotaux(){
       const t=totaux[e];
       const gagne=t.complet&&mini!==null&&Math.abs(t.somme-mini)<0.005;
       const rien=t.manque===lignes.length;
-      return `<td class="${gagne?"gagnant":""} ${t.manque?"partiel":""}">${rien?"—":euros(t.somme)}${t.manque?`<span class="manque">${t.manque} prix manquant${t.manque>1?"s":""}</span>`:""}</td>`;
+      return `<td class="${gagne?"gagnant":""} ${t.manque?"partiel":""}">${rien?"—":euros(t.somme)}${t.manque?`<span class="manque">${t.manque} prix manquant${t.manque>1?"s":""}</span>`:""}${!t.manque&&t.estimes?`<span class="manque estime">dont ${t.estimes} estimé${t.estimes>1?"s":""}</span>`:""}</td>`;
     }).join("");
 }
 

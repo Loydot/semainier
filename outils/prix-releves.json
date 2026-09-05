@@ -1,0 +1,275 @@
+{
+ "Oignon|pièce": {
+  "ref": 0.42,
+  "e": {
+   "inter": 0.34,
+   "lidl": 0.1,
+   "carrefour": 0.41
+  },
+  "n": 39
+ },
+ "Ail|gousse": {
+  "ref": 0.06,
+  "e": {
+   "inter": 0.05,
+   "lidl": 0.05,
+   "carrefour": 0.07,
+   "leclerc": 0.06
+  },
+  "n": 22
+ },
+ "Carotte|pièce": {
+  "ref": 0.23,
+  "e": {
+   "inter": 0.23,
+   "lidl": 0.2,
+   "carrefour": 0.24,
+   "leclerc": 0.24
+  },
+  "n": 91
+ },
+ "Carotte|g": {
+  "ref": 1.93,
+  "e": {
+   "inter": 1.89,
+   "lidl": 1.69,
+   "carrefour": 1.99,
+   "leclerc": 1.99
+  },
+  "n": 91
+ },
+ "Pommes de terre|g": {
+  "ref": 2.19,
+  "e": {
+   "inter": 2.77,
+   "lidl": 1.75,
+   "carrefour": 2.79,
+   "leclerc": 2.47
+  },
+  "n": 87
+ },
+ "Tomates|pièce": {
+  "ref": 0.36,
+  "e": {
+   "inter": 0.36,
+   "lidl": 0.24,
+   "carrefour": 0.54,
+   "leclerc": 0.24
+  },
+  "n": 92
+ },
+ "Citron|pièce": {
+  "ref": 0.39,
+  "e": {
+   "inter": 0.34,
+   "lidl": 0.25,
+   "carrefour": 0.33
+  },
+  "n": 56
+ },
+ "Citron vert|pièce": {
+  "ref": 0.4,
+  "e": {
+   "inter": 0.31,
+   "leclerc": 0.34
+  },
+  "n": 22
+ },
+ "Courgette|pièce": {
+  "ref": 0.62,
+  "e": {
+   "inter": 0.6,
+   "lidl": 0.44,
+   "carrefour": 0.75,
+   "leclerc": 0.45
+  },
+  "n": 81
+ },
+ "Aubergine|pièce": {
+  "ref": 1.05,
+  "e": {
+   "inter": 1,
+   "lidl": 0.87,
+   "carrefour": 0.94
+  },
+  "n": 55
+ },
+ "Poivron|pièce": {
+  "ref": 0.81,
+  "e": {
+   "inter": 0.86,
+   "lidl": 0.49,
+   "carrefour": 0.81,
+   "leclerc": 1.35
+  },
+  "n": 17
+ },
+ "Poireau|pièce": {
+  "ref": 0.56,
+  "e": {
+   "inter": 0.52,
+   "lidl": 0.37,
+   "carrefour": 0.6
+  },
+  "n": 49
+ },
+ "Navet|pièce": {
+  "ref": 0.44,
+  "e": {
+   "inter": 0.43,
+   "lidl": 0.3,
+   "carrefour": 0.48,
+   "leclerc": 0.36
+  },
+  "n": 38
+ },
+ "Échalote|pièce": {
+  "ref": 0.32,
+  "e": {
+   "inter": 0.19,
+   "carrefour": 0.32
+  },
+  "n": 25
+ },
+ "Salade verte|pièce": {
+  "ref": 1.29,
+  "e": {
+   "leclerc": 2
+  },
+  "n": 5
+ },
+ "Champignons de Paris|g": {
+  "ref": 5.99,
+  "e": {
+   "inter": 5.99,
+   "lidl": 7.16,
+   "carrefour": 6.24
+  },
+  "n": 66
+ },
+ "Épinards frais|g": {
+  "ref": 7.12,
+  "e": {
+   "inter": 5.74,
+   "carrefour": 7.32
+  },
+  "n": 4
+ },
+ "Chou vert|pièce": {
+  "ref": 2.6,
+  "e": {
+   "inter": 0.98
+  },
+  "n": 7
+ },
+ "Chou vert|g": {
+  "ref": 2.89,
+  "e": {
+   "inter": 1.09
+  },
+  "n": 7
+ },
+ "Chou-fleur|g": {
+  "ref": 3.74,
+  "e": {},
+  "n": 4
+ },
+ "Brocoli|g": {
+  "ref": 3.84,
+  "e": {
+   "inter": 3.59,
+   "carrefour": 2.99,
+   "leclerc": 5.38
+  },
+  "n": 24
+ },
+ "Pomme|pièce": {
+  "ref": 0.45,
+  "e": {
+   "inter": 0.48,
+   "lidl": 0.3,
+   "carrefour": 0.45,
+   "leclerc": 0.44
+  },
+  "n": 86
+ },
+ "Poire|pièce": {
+  "ref": 0.6,
+  "e": {
+   "inter": 0.73,
+   "lidl": 0.39,
+   "carrefour": 0.68
+  },
+  "n": 52
+ },
+ "Orange|pièce": {
+  "ref": 0.53,
+  "e": {
+   "inter": 0.59,
+   "lidl": 0.44,
+   "carrefour": 0.5
+  },
+  "n": 89
+ },
+ "Fraises|g": {
+  "ref": 11.45,
+  "e": {
+   "carrefour": 11
+  },
+  "n": 16
+ },
+ "Concombre|pièce": {
+  "ref": 0.8,
+  "e": {
+   "lidl": 0.66,
+   "carrefour": 1.33
+  },
+  "n": 11
+ },
+ "Potiron|g": {
+  "ref": 1.79,
+  "e": {},
+  "n": 3
+ },
+ "Céleri|pièce": {
+  "ref": 0.93,
+  "e": {
+   "carrefour": 1
+  },
+  "n": 4
+ },
+ "Céleri-rave|g": {
+  "ref": 2.32,
+  "e": {
+   "carrefour": 2.49
+  },
+  "n": 4
+ },
+ "Avocat|pièce": {
+  "ref": 1.2,
+  "e": {
+   "lidl": 1.4,
+   "carrefour": 0.9,
+   "leclerc": 0.93
+  },
+  "n": 13
+ },
+ "Filet de poulet|g": {
+  "ref": 15.2,
+  "e": {},
+  "n": 1
+ },
+ "Pois chiches|g": {
+  "ref": 3.6,
+  "e": {},
+  "n": 1
+ },
+ "Petits pois|g": {
+  "ref": 8.98,
+  "e": {
+   "inter": 11.96,
+   "carrefour": 3.57
+  },
+  "n": 4
+ }
+}
