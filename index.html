@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Le calendrier des repas et la liste de courses qui en découle. 151 recettes, dont les classiques français vérifiés.">
+<meta name="theme-color" content="#F2F1EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14151A" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="icone-apple.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Semainier">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+  :root{color-scheme:light dark}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  .wrap{padding-top:max(26px,env(safe-area-inset-top));padding-bottom:max(90px,env(safe-area-inset-bottom))}
+  #installer{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:25;border:0;border-radius:8px;padding:10px 16px;font:600 14px Archivo,system-ui,sans-serif;background:#2B4A7A;color:#FCFBF7;box-shadow:0 10px 24px -10px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+<title>Semainier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=DM+Serif+Display&family=Archivo:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --bg:#F2F1EC; --surface:#FCFBF7; --surface-2:#E9E7DF;
+  --ink:#1E2028; --ink-2:#5F636F; --ink-3:#8E929C;
+  --line:#D9D6CC; --line-strong:#C2BEB1;
+  --accent:#2B4A7A; --accent-soft:#DFE6F0; --accent-ink:#FCFBF7;
+  --cuivre:#A85B2C; --cuivre-soft:#F2E3D8;
+  --shadow:0 1px 2px rgba(30,32,40,.05), 0 10px 26px -20px rgba(30,32,40,.6);
+  --r:11px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14151A; --surface:#1C1E25; --surface-2:#262932;
+    --ink:#E9EAEF; --ink-2:#A7ABB7; --ink-3:#7B808C;
+    --line:#2E313A; --line-strong:#3D414C;
+    --accent:#8FB4E8; --accent-soft:#1F2A3A; --accent-ink:#14151A;
+    --cuivre:#DB9463; --cuivre-soft:#2E2118;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 30px -22px #000;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14151A; --surface:#1C1E25; --surface-2:#262932;
+  --ink:#E9EAEF; --ink-2:#A7ABB7; --ink-3:#7B808C;
+  --line:#2E313A; --line-strong:#3D414C;
+  --accent:#8FB4E8; --accent-soft:#1F2A3A; --accent-ink:#14151A;
+  --cuivre:#DB9463; --cuivre-soft:#2E2118;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 30px -22px #000;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Archivo,"Segoe UI",system-ui,sans-serif;font-size:15.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:1300px;margin:0 auto;padding:26px 20px 90px}
+
+/* bandeau */
+.top{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+.brand h1{font-family:"DM Serif Display",Georgia,serif;font-size:clamp(32px,4.6vw,48px);line-height:1;margin:0;letter-spacing:-.015em}
+.brand p{margin:7px 0 0;color:var(--ink-2);max-width:52ch;font-size:14.5px}
+.pers{display:flex;align-items:center;gap:9px;border:1px solid var(--line-strong);border-radius:6px;padding:5px 7px 5px 13px;background:var(--surface)}
+.pers .lab{font-size:12px;color:var(--ink-2)}
+.pers .val{font-size:17px;min-width:1.5ch;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.rnd{width:27px;height:27px;border-radius:5px;border:1px solid var(--line-strong);background:var(--bg);display:grid;place-items:center;font-size:16px;line-height:1;padding:0 0 2px;transition:.15s}
+.rnd:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+/* navigation */
+.nav{display:flex;align-items:center;gap:10px;margin:18px 0 14px;flex-wrap:wrap}
+.fleche{width:32px;height:32px;border-radius:6px;border:1px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;font-size:15px}
+.fleche:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.mois-titre{font-family:"DM Serif Display",Georgia,serif;font-size:24px;letter-spacing:-.01em;text-transform:capitalize;min-width:9ch}
+.auj{border:0;background:transparent;color:var(--cuivre);font-size:13px;text-decoration:underline;text-underline-offset:3px;padding:0}
+.spacer{flex:1}
+.bouton{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:6px;padding:7px 14px;font-size:13px;font-weight:600}
+.bouton:hover{background:var(--accent);color:var(--accent-ink)}
+.sync{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.09em;font-size:11.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.sync::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--line-strong)}
+.sync.ok::before{background:var(--accent)}
+.sync.souci{color:var(--cuivre)}
+.sync.souci::before{background:var(--cuivre)}
+.bouton.sourdine{border-color:var(--line-strong);color:var(--ink-2)}
+.bouton.sourdine:hover{background:var(--surface-2);color:var(--ink)}
+
+.grille{display:grid;grid-template-columns:minmax(0,1fr) 344px;gap:22px;align-items:start}
+
+/* calendrier */
+.cal-cadre{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:10px}
+.cal{display:grid;grid-template-columns:32px repeat(7,minmax(102px,1fr));gap:5px;min-width:790px}
+.dow{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.14em;font-size:11.5px;color:var(--ink-3);text-align:center;padding:2px 0 6px}
+.sem{display:flex;align-items:flex-start;justify-content:center;padding-top:6px}
+.sem button{font-family:"Barlow Condensed",sans-serif;font-size:11.5px;letter-spacing:.06em;color:var(--ink-3);border:1px solid transparent;background:transparent;border-radius:5px;padding:3px 4px;writing-mode:vertical-rl;transform:rotate(180deg)}
+.sem button:hover{border-color:var(--line-strong);color:var(--ink)}
+.sem button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+.cel{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 5px 6px;min-height:92px;display:flex;flex-direction:column;gap:3px}
+.cel.hors{opacity:.42}
+.cel.sel{background:var(--accent-soft);border-color:var(--line-strong)}
+.cel.auj{border-color:var(--cuivre);box-shadow:inset 0 0 0 1px var(--cuivre)}
+.cel .jj{font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:500;line-height:1;color:var(--ink-2);padding:1px 3px 3px;font-variant-numeric:tabular-nums}
+.cel.auj .jj{color:var(--cuivre);font-weight:600}
+.ligne{flex:1;width:100%;text-align:left;display:flex;gap:5px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:4px 5px;overflow:hidden;transition:.12s}
+.ligne:hover{border-color:var(--accent)}
+.ligne .r{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;font-size:10.5px;letter-spacing:.1em;color:var(--ink-3);flex:none}
+.ligne .n{font-size:12.5px;line-height:1.2;font-weight:500;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ligne.libre{background:transparent;border-style:dashed}
+.ligne.libre .n{color:var(--ink-3);font-weight:400}
+.ligne.libre:hover{background:var(--surface);border-style:solid}
+.ligne.repos{border-style:dotted}
+.ligne.repos .n{color:var(--ink-3);font-style:italic;font-weight:400}
+
+/* vue semaine */
+.cal-cadre.nu{background:transparent;border:0;box-shadow:none;padding:0;overflow:visible}
+.semaine{display:flex;flex-direction:column;gap:8px}
+.jour{display:grid;grid-template-columns:74px minmax(0,1fr);gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.jour.auj{border-color:var(--cuivre);background:linear-gradient(90deg,var(--cuivre-soft),var(--surface) 40%)}
+.jour.passe{opacity:.6}
+.jdate{display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--line);padding-right:10px}
+.jdate .dow2{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.11em;font-size:12.5px;color:var(--ink-3)}
+.jour.auj .jdate .dow2{color:var(--cuivre)}
+.jdate .jj2{font-family:"Barlow Condensed",sans-serif;font-size:29px;line-height:.95;font-weight:500;font-variant-numeric:tabular-nums}
+.jdate .mois2{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;font-size:11px;letter-spacing:.1em;color:var(--ink-3)}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slot{width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 11px;min-height:60px;transition:.15s;display:block}
+.slot:hover{border-color:var(--accent)}
+.slot .r2{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--ink-3);display:block;margin-bottom:2px}
+.slot .n2{font-weight:600;font-size:14.5px;line-height:1.2;display:block}
+.slot .s2{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;font-size:11.5px;color:var(--cuivre);display:block;margin-top:2px}
+.slot.libre{border-style:dashed;background:transparent}
+.slot.libre .n2{font-weight:400;color:var(--ink-3)}
+.slot.libre:hover{background:var(--accent-soft);border-style:solid}
+.vue{display:flex;gap:3px;background:var(--surface-2);border-radius:7px;padding:3px}
+.vue button{border:0;background:transparent;border-radius:5px;padding:5px 13px;font-size:13px;color:var(--ink-2)}
+.vue button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+/* liste */
+.liste{position:sticky;top:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.liste-head{padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+.liste-head h2{font-family:"DM Serif Display",Georgia,serif;font-size:22px;margin:0;letter-spacing:-.01em}
+.portee{display:flex;gap:4px;margin-top:9px;background:var(--surface-2);border-radius:7px;padding:3px}
+.portee button{flex:1;border:0;background:transparent;border-radius:5px;padding:5px 8px;font-size:12.5px;color:var(--ink-2)}
+.portee button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.periode{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--ink-3);margin-top:8px;display:block}
+.rayons{max-height:min(58vh,620px);overflow-y:auto;padding:2px 0}
+.rayon{padding:11px 16px 5px}
+.rayon h3{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;font-size:12px;letter-spacing:.13em;color:var(--ink-2);margin:0 0 5px;display:flex;gap:8px;align-items:center}
+.rayon h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.art{display:flex;align-items:baseline;gap:9px;padding:3px 0;font-size:14.5px}
+.art input{appearance:none;width:15px;height:15px;flex:none;border:1.5px solid var(--line-strong);border-radius:4px;background:var(--bg);cursor:pointer;position:relative;top:2px}
+.art input:checked{background:var(--accent);border-color:var(--accent)}
+.art input:checked::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--accent-ink);border-width:0 1.7px 1.7px 0;transform:rotate(42deg)}
+.art label{flex:1;cursor:pointer}
+.art .q{font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.art.ok label,.art.ok .q{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+.vide-liste{padding:26px 18px 32px;text-align:center;color:var(--ink-2);font-size:14.5px}
+.vide-liste b{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:18px;color:var(--ink);display:block;margin-bottom:5px}
+.liste-foot{display:flex;gap:7px;padding:11px 13px;border-top:1px solid var(--line);background:var(--surface-2)}
+.act{flex:1;border:1px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:7px 9px;font-size:13px;transition:.15s}
+.act:hover{border-color:var(--accent);color:var(--accent)}
+.act.primaire{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.act.primaire:hover{filter:brightness(1.2);color:var(--bg)}
+
+/* sélecteur */
+.voile{position:fixed;inset:0;background:rgba(20,21,26,.45);z-index:30;display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px}
+.panneau{background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);width:min(660px,100%);max-height:86vh;display:flex;flex-direction:column;overflow:hidden}
+.panneau header{padding:14px 18px 11px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.panneau h2{font-family:"DM Serif Display",Georgia,serif;font-size:21px;margin:0}
+.creneau{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:12.5px;color:var(--cuivre)}
+.fermer{margin-left:auto;border:0;background:transparent;font-size:20px;line-height:1;color:var(--ink-3);padding:0 2px}
+.fermer:hover{color:var(--ink)}
+.recherche{margin:12px 18px 0;border:1px solid var(--line-strong);border-radius:7px;background:var(--bg);padding:8px 12px;width:calc(100% - 36px)}
+.recherche:focus{outline:0;border-color:var(--accent)}
+.cuisines{display:flex;flex-wrap:wrap;gap:5px;padding:11px 18px 10px}
+.puce{border:1px solid var(--line-strong);background:transparent;border-radius:999px;padding:3px 10px;font-size:12.5px;color:var(--ink-2)}
+.puce:hover{border-color:var(--accent);color:var(--ink)}
+.puce[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.choix{overflow-y:auto;padding:0 10px 12px}
+.opt{width:100%;text-align:left;background:transparent;border:0;border-radius:8px;padding:9px 12px;display:flex;gap:12px;align-items:baseline}
+.opt:hover{background:var(--accent-soft)}
+.opt .t{font-weight:600;font-size:14.5px}
+.opt .d{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;font-size:12px;color:var(--ink-3);margin-left:auto;white-space:nowrap}
+.opt .p{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;font-size:12px;color:var(--cuivre)}
+.opt.retirer .t{color:var(--cuivre)}
+.sep{padding:10px 22px 4px;font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.13em;font-size:11.5px;color:var(--ink-3)}
+.opt.ecrire .t{color:var(--accent)}
+.opt-row{display:flex;align-items:stretch;border-radius:8px}
+.opt-row:hover{background:var(--accent-soft)}
+.opt-row .opt{flex:1}
+.opt-row .opt:hover{background:transparent}
+.mini{border:0;background:transparent;color:var(--ink-3);padding:0 12px;font-size:13px}
+.mini:hover{color:var(--accent)}
+.maison{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.07em;font-size:12px;color:var(--accent)}
+
+/* formulaire recette */
+.form{padding:14px 18px 20px;display:flex;flex-direction:column;gap:13px;overflow-y:auto}
+.champ{display:flex;flex-direction:column;gap:4px}
+.champ>span{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;font-size:11.5px;color:var(--ink-3)}
+.champ input,.champ textarea{border:1px solid var(--line-strong);border-radius:7px;background:var(--bg);padding:8px 11px;font:inherit;width:100%}
+.champ input:focus,.champ textarea:focus{outline:0;border-color:var(--accent)}
+.champ textarea{min-height:168px;resize:vertical;line-height:1.65;font-size:14.5px}
+.duo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.aide{font-size:12.5px;color:var(--ink-3);line-height:1.45}
+.aide code{font-family:ui-monospace,monospace;font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+.err{color:var(--cuivre);font-size:13.5px}
+.form-actions{display:flex;gap:8px;align-items:center}
+.form-actions .spacer{flex:1}
+.danger{border:1px solid var(--line-strong);background:transparent;color:var(--cuivre);border-radius:6px;padding:7px 13px;font-size:13px}
+.danger:hover{background:var(--cuivre-soft)}
+.apercu{background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.apercu h4{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;font-size:11.5px;color:var(--ink-3);margin:0 0 6px;font-weight:500}
+.apercu ul{margin:0;padding-left:16px;columns:2;column-gap:18px}
+.apercu li{margin-bottom:2px}
+.apercu .ry{color:var(--ink-3);font-size:12px}
+.ligne-nom{display:flex;gap:8px;align-items:stretch}
+.ligne-nom input{flex:1}
+.ia{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:7px;padding:0 14px;font-size:13px;font-weight:600;white-space:nowrap}
+.ia:hover:not(:disabled){background:var(--accent);color:var(--accent-ink)}
+.ia:disabled{opacity:.55;cursor:default}
+.ia-etat{font-size:12.5px;color:var(--ink-3);min-height:1.2em}
+.ia-etat.souci{color:var(--cuivre)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:9px 17px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.saut{display:none}
+
+@media (max-width:1080px){
+  .grille{grid-template-columns:minmax(0,1fr)}
+  .liste{position:static}
+  .rayons{max-height:none}
+  .saut{display:flex;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 20px;font-weight:600;font-size:14px;text-decoration:none;box-shadow:0 12px 26px -12px rgba(0,0,0,.6)}
+  .saut[hidden]{display:none}
+}
+@media print{
+  .nav,.liste-foot,.saut,.pers,.portee{display:none}
+  .grille{grid-template-columns:1fr}
+  .cal-cadre,.liste{break-inside:avoid;box-shadow:none}
+  body{background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Semainier</h1>
+      <p>Le calendrier des repas, mois par mois. Chaque plat posé sur une case verse ses ingrédients dans la liste de courses de la semaine.</p>
+    </div>
+    <div class="pers">
+      <span class="lab">Couverts</span>
+      <button class="rnd" id="moins" aria-label="Un couvert de moins">−</button>
+      <span class="val" id="npers">4</span>
+      <button class="rnd" id="plus" aria-label="Un couvert de plus">+</button>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <div class="vue" id="vue-bascule">
+      <button data-vue="mois">Mois</button>
+      <button data-vue="semaine">Semaine</button>
+    </div>
+    <button class="fleche" id="prec" aria-label="Période précédente">‹</button>
+    <button class="fleche" id="suiv" aria-label="Période suivante">›</button>
+    <span class="mois-titre" id="mois-titre"></span>
+    <button class="auj" id="retour" hidden>aujourd'hui</button>
+    <span class="spacer"></span>
+    <button class="bouton" id="remplir">Remplir la semaine</button>
+    <button class="bouton sourdine" id="effacer">Vider la semaine</button>
+    <span class="sync attente" id="sync" title="Où sont enregistrés ton calendrier et tes recettes">Connexion…</span>
+  </nav>
+
+  <div class="grille">
+    <div class="cal-cadre">
+      <div class="cal" id="cal"></div>
+    </div>
+
+    <aside class="liste" id="liste">
+      <div class="liste-head">
+        <h2>Liste de courses</h2>
+        <div class="portee" id="portee">
+          <button data-portee="semaine">Semaine</button>
+          <button data-portee="mois">Mois entier</button>
+        </div>
+        <span class="periode" id="periode"></span>
+      </div>
+      <div class="rayons" id="rayons"></div>
+      <div class="liste-foot">
+        <button class="act" id="decocher">Tout décocher</button>
+        <button class="act primaire" id="copier">Copier la liste</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<a class="saut" href="#liste" id="saut" hidden>Liste · <span id="sautn">0</span></a>
+<div class="voile" id="voile" hidden>
+  <div class="panneau" role="dialog" aria-modal="true" aria-label="Choisir un plat">
+    <header>
+      <h2>Choisir un plat</h2>
+      <span class="creneau" id="creneau"></span>
+      <button class="fermer" id="fermer" aria-label="Fermer">×</button>
+    </header>
+    <input class="recherche" id="recherche" placeholder="Chercher un plat, un pays, un ingrédient…" autocomplete="off">
+    <div class="cuisines" id="types"></div>
+    <div class="cuisines" id="cuisines"></div>
+    <div class="choix" id="choix"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const RAYONS=[["legumes","Fruits & légumes"],["viande","Boucherie & poissonnerie"],["cremerie","Crèmerie & œufs"],["epicerie","Épicerie"],["boulangerie","Boulangerie"],["surgeles","Surgelés"]];
+const PLATS=[
+{id:"blanquette-veau",nom:"Blanquette de veau",t:135,pays:"France",cat:"veau",tags:["mijoté"],ing:[["Épaule de veau",250,"g","viande"],["Carotte",1,"pièce","legumes"],["Poireau",0.25,"pièce","legumes"],["Céleri",0.25,"pièce","legumes"],["Champignons de Paris",62.5,"g","legumes"],["Oignons grelots",37.5,"g","legumes"],["Oignon",0.25,"pièce","legumes"],["Beurre",7.5,"g","cremerie"],["Farine",7.5,"g","epicerie"],["Crème épaisse",25,"ml","cremerie"],["Œufs",0.5,"pièce","cremerie"],["Citron",0.25,"pièce","legumes"],["Bouquet garni",0.25,"botte","legumes"],["Clous de girofle",1,"au goût","epicerie",1],["Riz basmati",70,"g","epicerie"]]},
+{id:"pot-au-feu",nom:"Pot-au-feu",t:210,pays:"France",cat:"boeuf",tags:["mijoté"],ing:[["Bœuf à braiser",416.6667,"g","viande"],["Os à moelle",1,"pièce","viande"],["Carotte",166.6667,"g","legumes"],["Poireau",133.3333,"g","legumes"],["Pommes de terre",100,"g","legumes"],["Navet",83.3333,"g","legumes"],["Oignon",0.5,"pièce","legumes"],["Clous de girofle",1,"au goût","epicerie",1],["Bouquet garni",0.1667,"botte","legumes"],["Gros sel",1,"au goût","epicerie",1]]},
+{id:"cassoulet",nom:"Cassoulet de Castelnaudary",t:240,pays:"France",cat:"canard",tags:["mijoté"],ing:[["Haricots lingots",93.75,"g","epicerie"],["Cuisse de canard confite",0.5,"pièce","viande"],["Saucisse de Toulouse",80,"g","viande"],["Épaule de porc",50,"g","viande"],["Couenne de porc",62.5,"g","viande"],["Lard salé",25,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Carotte",0.5,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Bouquet garni",0.25,"botte","legumes"]]},
+{id:"choucroute-garnie",nom:"Choucroute garnie",t:180,pays:"France",cat:"porc",tags:["mijoté"],ing:[["Choucroute crue",200,"g","legumes"],["Palette fumée",66.6667,"g","viande"],["Lard fumé",25,"g","viande"],["Lard frais",25,"g","viande"],["Saucisse de Strasbourg",1,"pièce","viande"],["Saucisse de Montbéliard",0.1667,"pièce","viande"],["Pommes de terre",200,"g","legumes"],["Vin blanc sec",41.6667,"ml","epicerie"],["Oignon",0.3333,"pièce","legumes"],["Baies de genièvre",1,"au goût","epicerie",1],["Clous de girofle",1,"au goût","epicerie",1],["Laurier",1,"au goût","epicerie",1]]},
+{id:"coq-au-vin",nom:"Coq au vin",t:150,pays:"France",cat:"volaille",tags:["mijoté"],ing:[["Coq découpé",300,"g","viande"],["Vin rouge",125,"ml","epicerie"],["Lardons fumés",41.6667,"g","viande"],["Champignons de Paris",41.6667,"g","legumes"],["Oignons grelots",2,"pièce","legumes"],["Carotte",0.3333,"pièce","legumes"],["Oignon",0.1667,"pièce","legumes"],["Ail",0.3333,"gousse","legumes"],["Cognac",8.3333,"ml","epicerie"],["Fond de veau",33.3333,"ml","epicerie"],["Farine",8.3333,"g","epicerie"],["Bouquet garni",0.1667,"botte","legumes"]]},
+{id:"navarin-agneau",nom:"Navarin d'agneau printanier",t:105,pays:"France",cat:"agneau",tags:["mijoté"],ing:[["Épaule d'agneau",233.3333,"g","viande"],["Navets nouveaux",1.3333,"pièce","legumes"],["Carotte",1,"pièce","legumes"],["Oignons nouveaux",0.1667,"botte","legumes"],["Oignon",0.1667,"pièce","legumes"],["Petits pois frais",83.3333,"g","legumes"],["Pommes de terre",100,"g","legumes"],["Ail",0.6667,"gousse","legumes"],["Vin blanc sec",25,"ml","epicerie"],["Farine",5,"g","epicerie"],["Bouillon de légumes",1,"au goût","epicerie",1],["Huile d'olive",1,"au goût","epicerie",1],["Thym frais",1,"au goût","legumes",1],["Laurier",1,"au goût","epicerie",1]]},
+{id:"daube-provencale",nom:"Daube provençale",t:240,pays:"France",cat:"boeuf",tags:["mijoté"],ing:[["Bœuf à braiser",250,"g","viande"],["Vin rouge",125,"ml","epicerie"],["Carotte",0.5,"pièce","legumes"],["Oignon",0.8333,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Poitrine fumée",25,"g","viande"],["Orange",0.1667,"pièce","legumes"],["Olives noires",25,"g","epicerie"],["Macaronis",66.6667,"g","epicerie"],["Bouquet garni",0.1667,"botte","legumes"],["Clous de girofle",1,"au goût","epicerie",1]]},
+{id:"potee-auvergnate",nom:"Potée auvergnate",t:180,pays:"France",cat:"porc",tags:["mijoté"],ing:[["Palette de porc demi-sel",166.6667,"g","viande"],["Jarret de porc",133.3333,"g","viande"],["Saucisson à cuire",0.1667,"pièce","viande"],["Saucisse fumée",0.5,"pièce","viande"],["Chou vert",0.1667,"pièce","legumes"],["Carotte",1,"pièce","legumes"],["Navet",0.8333,"pièce","legumes"],["Pommes de terre",166.6667,"g","legumes"],["Oignon",0.3333,"pièce","legumes"],["Clous de girofle",1,"au goût","epicerie",1],["Bouquet garni",0.1667,"botte","legumes"]]},
+{id:"poule-au-pot",nom:"Poule au pot Henri IV",t:180,pays:"France",cat:"volaille",tags:["mijoté"],ing:[["Poule",300,"g","viande"],["Chair à saucisse",50,"g","viande"],["Jambon de Bayonne",16.6667,"g","viande"],["Pain de mie",0.3333,"tranche","boulangerie"],["Lait",16.6667,"ml","cremerie"],["Œufs",0.1667,"pièce","cremerie"],["Échalote",0.3333,"pièce","legumes"],["Ail",0.3333,"gousse","legumes"],["Persil",1,"au goût","legumes",1],["Carotte",0.5,"pièce","legumes"],["Navet",0.6667,"pièce","legumes"],["Chou vert",0.1667,"pièce","legumes"],["Pommes de terre",1,"pièce","legumes"],["Céleri",0.5,"pièce","legumes"],["Poireau",0.5,"pièce","legumes"],["Oignon",0.1667,"pièce","legumes"],["Clous de girofle",1,"au goût","epicerie",1]]},
+{id:"boeuf-carottes",nom:"Bœuf carottes",t:150,pays:"France",cat:"boeuf",tags:["mijoté"],ing:[["Bœuf à braiser",187.5,"g","viande"],["Carotte",2,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Vin blanc sec",62.5,"ml","epicerie"],["Lardons fumés",30,"g","viande"],["Thym frais",1,"au goût","legumes",1]]},
+{id:"lapin-moutarde",nom:"Lapin à la moutarde",t:70,pays:"France",cat:"lapin",tags:["mijoté"],ing:[["Râble de lapin",200,"g","viande"],["Moutarde",1,"au goût","epicerie",1],["Crème liquide",62.5,"ml","cremerie"],["Lardons fumés",37.5,"g","viande"],["Échalote",0.75,"pièce","legumes"],["Vin blanc sec",50,"ml","epicerie"],["Tagliatelles",80,"g","epicerie"]]},
+{id:"poulet-basquaise",nom:"Poulet basquaise",t:60,pays:"France",cat:"volaille",tags:["mijoté"],ing:[["Cuisses de poulet",2,"pièce","viande"],["Poivron",1,"pièce","legumes"],["Tomates",2,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Piment d'Espelette",1,"au goût","epicerie",1],["Riz basmati",70,"g","epicerie"]]},
+{id:"poulet-estragon",nom:"Poulet à l'estragon",t:40,pays:"France",cat:"volaille",tags:[],ing:[["Filet de poulet",150,"g","viande"],["Crème liquide",70,"ml","cremerie"],["Estragon",1,"au goût","legumes",1],["Échalote",0.75,"pièce","legumes"],["Vin blanc sec",50,"ml","epicerie"],["Riz basmati",70,"g","epicerie"]]},
+{id:"veau-marengo",nom:"Sauté de veau Marengo",t:105,pays:"France",cat:"veau",tags:["mijoté"],ing:[["Épaule de veau",162.5,"g","viande"],["Tomates concassées",150,"g","epicerie"],["Champignons de Paris",75,"g","legumes"],["Oignon",0.5,"pièce","legumes"],["Vin blanc sec",62.5,"ml","epicerie"],["Ail",0.75,"gousse","legumes"],["Riz basmati",70,"g","epicerie"]]},
+{id:"petit-sale-lentilles",nom:"Petit salé aux lentilles",t:120,pays:"France",cat:"porc",tags:["mijoté"],ing:[["Porc demi-sel",233.3333,"g","viande"],["Saucisse de Morteau",0.1667,"pièce","viande"],["Lentilles vertes du Puy",58.3333,"g","epicerie"],["Carotte",0.3333,"pièce","legumes"],["Oignon",0.1667,"pièce","legumes"],["Clous de girofle",1,"au goût","epicerie",1],["Bouquet garni",0.1667,"botte","legumes"]]},
+{id:"saucisses-lentilles",nom:"Saucisses lentilles",t:50,pays:"France",cat:"porc",tags:[],ing:[["Saucisse de Toulouse",1.5,"pièce","viande"],["Lentilles vertes",90,"g","epicerie"],["Carotte",1,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Lardons fumés",30,"g","viande"]]},
+{id:"jarret-porc-choux",nom:"Jarret de porc aux choux",t:120,pays:"France",cat:"porc",tags:["mijoté"],ing:[["Jarret de porc",200,"g","viande"],["Chou vert",200,"g","legumes"],["Pommes de terre",200,"g","legumes"],["Carotte",1,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"]]},
+{id:"steak-frites",nom:"Steak frites",t:20,pays:"France",cat:"boeuf",tags:["rapide"],ing:[["Steak de bœuf",150,"g","viande"],["Frites surgelées",200,"g","surgeles"],["Beurre",10,"g","cremerie"],["Salade verte",0.25,"pièce","legumes"]]},
+{id:"entrecote-bordelaise",nom:"Entrecôte bordelaise",t:35,pays:"France",cat:"boeuf",tags:[],ing:[["Entrecôte",180,"g","viande"],["Échalote",2,"pièce","legumes"],["Vin rouge",75,"ml","epicerie"],["Beurre",20,"g","cremerie"],["Pommes de terre",200,"g","legumes"]]},
+{id:"magret-canard",nom:"Magret de canard au miel",t:35,pays:"France",cat:"canard",tags:[],ing:[["Magret de canard",180,"g","viande"],["Miel",1,"au goût","epicerie",1],["Pommes de terre",200,"g","legumes"],["Ail",1,"gousse","legumes"],["Thym frais",1,"au goût","legumes",1]]},
+{id:"confit-canard",nom:"Confit de canard, pommes sarladaises",t:45,pays:"France",cat:"canard",tags:[],ing:[["Cuisse de canard confite",1,"pièce","viande"],["Pommes de terre",250,"g","legumes"],["Ail",1.5,"gousse","legumes"],["Persil",1,"au goût","legumes",1],["Salade verte",0.25,"pièce","legumes"]]},
+{id:"gigot-flageolets",nom:"Gigot d'agneau aux flageolets",t:90,pays:"France",cat:"agneau",tags:["four"],ing:[["Gigot d'agneau",187.5,"g","viande"],["Flageolets",100,"g","epicerie"],["Ail",1.5,"gousse","legumes"],["Romarin",1,"au goût","legumes",1],["Oignon",0.5,"pièce","legumes"]]},
+{id:"roti-porc-lait",nom:"Rôti de porc au lait",t:90,pays:"France",cat:"porc",tags:["mijoté"],ing:[["Rôti de porc",162.5,"g","viande"],["Lait",150,"ml","cremerie"],["Ail",1,"gousse","legumes"],["Sauge",1,"au goût","legumes",1],["Pommes de terre",200,"g","legumes"]]},
+{id:"filet-mignon-moutarde",nom:"Filet mignon à la moutarde",t:45,pays:"France",cat:"porc",tags:[],ing:[["Filet mignon de porc",150,"g","viande"],["Moutarde",1,"au goût","epicerie",1],["Crème liquide",62.5,"ml","cremerie"],["Champignons de Paris",75,"g","legumes"],["Riz basmati",70,"g","epicerie"]]},
+{id:"cotes-porc-charcutiere",nom:"Côtes de porc charcutière",t:40,pays:"France",cat:"porc",tags:[],ing:[["Côte de porc",1,"pièce","viande"],["Cornichons",25,"g","epicerie"],["Moutarde",1,"au goût","epicerie",1],["Oignon",0.5,"pièce","legumes"],["Vin blanc sec",50,"ml","epicerie"],["Pommes de terre",200,"g","legumes"]]},
+{id:"pintade-choux",nom:"Pintade au chou",t:90,pays:"France",cat:"volaille",tags:["four"],ing:[["Pintade",187.5,"g","viande"],["Chou vert",200,"g","legumes"],["Lardons fumés",37.5,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Crème liquide",37.5,"ml","cremerie"]]},
+{id:"foie-veau-persillade",nom:"Foie de veau persillade",t:25,pays:"France",cat:"veau",tags:["rapide"],ing:[["Foie de veau",150,"g","viande"],["Persil",1,"au goût","legumes",1],["Ail",1,"gousse","legumes"],["Beurre",15,"g","cremerie"],["Pommes de terre",200,"g","legumes"]]},
+{id:"chou-farci",nom:"Chou farci",t:110,pays:"France",cat:"porc",tags:["four"],ing:[["Chou vert",0.25,"pièce","legumes"],["Bœuf haché",100,"g","viande"],["Chair à saucisse",62.5,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Riz basmati",30,"g","epicerie"],["Œufs",0.25,"pièce","cremerie"]]},
+{id:"tomates-farcies",nom:"Tomates farcies",t:75,pays:"France",cat:"porc",tags:["four"],ing:[["Tomates",2,"pièce","legumes"],["Chair à saucisse",125,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Riz basmati",50,"g","epicerie"],["Persil",1,"au goût","legumes",1],["Ail",0.75,"gousse","legumes"]]},
+{id:"courgettes-farcies",nom:"Courgettes farcies",t:70,pays:"France",cat:"porc",tags:["four"],ing:[["Courgette",1.5,"pièce","legumes"],["Chair à saucisse",112.5,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Riz basmati",40,"g","epicerie"],["Gruyère râpé",20,"g","cremerie"]]},
+{id:"petits-farcis",nom:"Petits farcis niçois",t:80,pays:"France",cat:"porc",tags:["four"],ing:[["Tomates",1,"pièce","legumes"],["Courgette",1,"pièce","legumes"],["Poivron",0.5,"pièce","legumes"],["Chair à saucisse",125,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Chapelure",20,"g","epicerie"]]},
+{id:"carbonade-flamande",nom:"Carbonade flamande",t:210,pays:"France",cat:"boeuf",tags:["mijoté"],ing:[["Bœuf à braiser",166.6667,"g","viande"],["Oignon",0.6667,"pièce","legumes"],["Lard fumé",41.6667,"g","viande"],["Beurre",5,"g","cremerie"],["Moutarde",0.5,"c. à soupe","epicerie"],["Pain d'épices",1,"tranche","boulangerie"],["Cassonade",0.3333,"c. à soupe","epicerie"],["Bière brune",166.6667,"ml","epicerie"],["Frites surgelées",150,"g","surgeles"],["Bouquet garni",0.1667,"botte","legumes"]]},
+{id:"waterzoi-poulet",nom:"Waterzoï de poulet",t:60,pays:"France",cat:"volaille",tags:["mijoté"],ing:[["Cuisses de poulet",175,"g","viande"],["Poireau",1,"pièce","legumes"],["Carotte",1,"pièce","legumes"],["Céleri",0.5,"pièce","legumes"],["Crème liquide",62.5,"ml","cremerie"],["Pommes de terre",150,"g","legumes"]]},
+{id:"welsh",nom:"Welsh complet",t:30,pays:"France",cat:"fromage",tags:["rapide"],ing:[["Cheddar",150,"g","cremerie"],["Pain de campagne",0.25,"pièce","boulangerie"],["Bière blonde",62.5,"ml","epicerie"],["Jambon blanc",1,"tranche","viande"],["Moutarde",1,"au goût","epicerie",1],["Frites surgelées",150,"g","surgeles"]]},
+{id:"baeckeoffe",nom:"Baeckeoffe",t:240,pays:"France",cat:"porc",tags:["mijoté"],ing:[["Épaule de porc",83.3333,"g","viande"],["Épaule d'agneau",83.3333,"g","viande"],["Bœuf à braiser",83.3333,"g","viande"],["Pommes de terre",416.6667,"g","legumes"],["Carotte",133.3333,"g","legumes"],["Poireau",0.5,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Ail",0.3333,"gousse","legumes"],["Vin blanc sec",125,"ml","epicerie"],["Bouquet garni",0.1667,"botte","legumes"]]},
+{id:"fondue-savoyarde",nom:"Fondue savoyarde",t:30,pays:"France",cat:"fromage",tags:[],ing:[["Fromage à fondue",200,"g","cremerie"],["Vin blanc sec",62.5,"ml","epicerie"],["Ail",0.5,"gousse","legumes"],["Pain de campagne",0.5,"pièce","boulangerie"]]},
+{id:"raclette",nom:"Raclette",t:30,pays:"France",cat:"fromage",tags:[],ing:[["Fromage à raclette",180,"g","cremerie"],["Pommes de terre",250,"g","legumes"],["Jambon blanc",2,"tranche","viande"],["Viande des Grisons",37.5,"g","viande"],["Cornichons",30,"g","epicerie"]]},
+{id:"croziflette",nom:"Croziflette",t:55,pays:"France",cat:"porc",tags:["four"],ing:[["Crozets",90,"g","epicerie"],["Reblochon",80,"g","cremerie"],["Lardons fumés",50,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Crème liquide",50,"ml","cremerie"]]},
+{id:"truffade",nom:"Truffade",t:45,pays:"France",cat:"fromage",tags:[],ing:[["Pommes de terre",250,"g","legumes"],["Tome fraîche",100,"g","cremerie"],["Lardons fumés",37.5,"g","viande"],["Ail",0.75,"gousse","legumes"]]},
+{id:"aligot-saucisse",nom:"Aligot et saucisse",t:50,pays:"France",cat:"porc",tags:[],ing:[["Pommes de terre",250,"g","legumes"],["Tome fraîche",100,"g","cremerie"],["Crème épaisse",50,"g","cremerie"],["Ail",0.5,"gousse","legumes"],["Saucisse de Toulouse",1,"pièce","viande"]]},
+{id:"gardiane-taureau",nom:"Gardiane de taureau",t:195,pays:"France",cat:"boeuf",tags:["mijoté"],ing:[["Bœuf à braiser",166.6667,"g","viande"],["Vin rouge",125,"ml","epicerie"],["Carotte",0.5,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Ail",0.6667,"gousse","legumes"],["Orange",0.1667,"pièce","legumes"],["Olives noires",25,"g","epicerie"],["Riz de Camargue",80,"g","epicerie"],["Vinaigre",1,"au goût","epicerie",1],["Huile d'olive",1,"au goût","epicerie",1],["Bouquet garni",0.1667,"botte","legumes"]]},
+{id:"piperade",nom:"Piperade aux œufs",t:90,pays:"France",cat:"oeufs",tags:[],ing:[["Poivrons verts doux",1.5,"pièce","legumes"],["Tomates",2,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Ail",0.75,"gousse","legumes"],["Œufs",2,"pièce","cremerie"],["Jambon de Bayonne",1,"tranche","viande"],["Piment d'Espelette",1,"au goût","epicerie",1],["Huile d'olive",1,"au goût","epicerie",1]]},
+{id:"axoa-veau",nom:"Axoa de veau",t:150,pays:"France",cat:"veau",tags:["mijoté"],ing:[["Épaule de veau",250,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Poivron",0.25,"pièce","legumes"],["Piments verts doux",2,"pièce","legumes"],["Ail",0.75,"gousse","legumes"],["Tomates",0.5,"pièce","legumes"],["Pommes de terre",200,"g","legumes"],["Piment d'Espelette",1,"au goût","epicerie",1],["Laurier",1,"au goût","epicerie",1],["Thym frais",1,"au goût","legumes",1]]},
+{id:"garbure",nom:"Garbure béarnaise",t:150,pays:"France",cat:"canard",tags:["mijoté"],ing:[["Cuisse de canard confite",0.5,"pièce","viande"],["Haricots tarbais",31.25,"g","epicerie"],["Chou vert",0.125,"pièce","legumes"],["Carotte",0.625,"pièce","legumes"],["Poireau",0.25,"pièce","legumes"],["Pommes de terre",100,"g","legumes"],["Navet",0.25,"pièce","legumes"],["Céleri",0.25,"pièce","legumes"],["Oignon",0.25,"pièce","legumes"],["Jambon de pays",25,"g","viande"],["Ail",0.5,"gousse","legumes"],["Clous de girofle",1,"au goût","epicerie",1],["Piment d'Espelette",1,"au goût","epicerie",1],["Thym frais",1,"au goût","legumes",1]]},
+{id:"sole-meuniere",nom:"Sole meunière",t:25,pays:"France",cat:"poisson",tags:["rapide"],ing:[["Sole",200,"g","viande"],["Beurre",30,"g","cremerie"],["Farine",10,"g","epicerie"],["Citron",0.5,"pièce","legumes"],["Persil",1,"au goût","legumes",1],["Pommes de terre",180,"g","legumes"]]},
+{id:"cabillaud-beurre-blanc",nom:"Cabillaud beurre blanc",t:35,pays:"France",cat:"poisson",tags:["poisson"],ing:[["Dos de cabillaud",160,"g","viande"],["Beurre",40,"g","cremerie"],["Échalote",1,"pièce","legumes"],["Vin blanc sec",62.5,"ml","epicerie"],["Riz basmati",70,"g","epicerie"]]},
+{id:"truite-amandes",nom:"Truite aux amandes",t:30,pays:"France",cat:"poisson",tags:["rapide"],ing:[["Truite",180,"g","viande"],["Amandes effilées",20,"g","epicerie"],["Beurre",25,"g","cremerie"],["Citron",0.5,"pièce","legumes"],["Pommes de terre",180,"g","legumes"]]},
+{id:"bouillabaisse",nom:"Bouillabaisse marseillaise",t:120,pays:"France",cat:"poisson",tags:["poisson"],ing:[["Rascasse",133.3333,"g","viande"],["Rouget",100,"g","viande"],["Congre",83.3333,"g","viande"],["Saint-pierre",83.3333,"g","viande"],["Pommes de terre",166.6667,"g","legumes"],["Fenouil",50,"g","legumes"],["Céleri",16.6667,"g","legumes"],["Oignon",0.3333,"pièce","legumes"],["Ail",0.6667,"gousse","legumes"],["Œufs",0.3333,"pièce","cremerie"],["Moutarde",1,"au goût","epicerie",1],["Safran",1,"au goût","epicerie",1],["Concentré de tomate",1,"au goût","epicerie",1],["Herbes de Provence",1,"au goût","epicerie",1],["Huile d'olive",1,"au goût","epicerie",1],["Pain de campagne",0.1667,"pièce","boulangerie"]]},
+{id:"soupe-poisson-rouille",nom:"Soupe de poisson et rouille",t:25,pays:"France",cat:"poisson",tags:["rapide"],ing:[["Soupe de poisson",300,"ml","epicerie"],["Rouille",0.25,"pot","epicerie"],["Gruyère râpé",25,"g","cremerie"],["Pain de campagne",0.25,"pièce","boulangerie"]]},
+{id:"brandade-morue",nom:"Brandade de morue nîmoise",t:60,pays:"France",cat:"poisson",tags:[],ing:[["Morue dessalée",150,"g","viande"],["Huile d'olive",50,"ml","epicerie"],["Lait",50,"ml","cremerie"],["Ail",1,"gousse","legumes"],["Laurier",1,"au goût","epicerie",1],["Pain de campagne",0.25,"pièce","boulangerie"]]},
+{id:"quenelles-nantua",nom:"Quenelles sauce Nantua",t:45,pays:"France",cat:"poisson",tags:["four"],ing:[["Quenelles de brochet",2,"pièce","cremerie"],["Crème liquide",75,"ml","cremerie"],["Bisque d'écrevisses",100,"ml","epicerie"],["Beurre",20,"g","cremerie"],["Riz basmati",60,"g","epicerie"],["Gruyère râpé",20,"g","cremerie"],["Noix de muscade",1,"au goût","epicerie",1]]},
+{id:"coquilles-st-jacques",nom:"Coquilles Saint-Jacques",t:40,pays:"France",cat:"mer",tags:["four"],ing:[["Noix de Saint-Jacques",120,"g","viande"],["Crème liquide",62.5,"ml","cremerie"],["Échalote",1,"pièce","legumes"],["Vin blanc sec",50,"ml","epicerie"],["Champignons de Paris",62.5,"g","legumes"],["Chapelure",15,"g","epicerie"]]},
+{id:"gratin-fruits-mer",nom:"Gratin de fruits de mer",t:45,pays:"France",cat:"mer",tags:["four"],ing:[["Fruits de mer",180,"g","viande"],["Crème liquide",70,"ml","cremerie"],["Vin blanc sec",50,"ml","epicerie"],["Gruyère râpé",30,"g","cremerie"],["Échalote",1,"pièce","legumes"],["Riz basmati",60,"g","epicerie"]]},
+{id:"raie-beurre-noisette",nom:"Raie au beurre noisette",t:30,pays:"France",cat:"poisson",tags:["rapide"],ing:[["Aile de raie",200,"g","viande"],["Beurre",30,"g","cremerie"],["Câpres",15,"g","epicerie"],["Citron",0.5,"pièce","legumes"],["Pommes de terre",180,"g","legumes"]]},
+{id:"dorade-four",nom:"Dorade au four",t:45,pays:"France",cat:"poisson",tags:["four"],ing:[["Dorade",200,"g","viande"],["Pommes de terre",200,"g","legumes"],["Tomates",1,"pièce","legumes"],["Citron",0.5,"pièce","legumes"],["Olives noires",20,"g","epicerie"],["Thym frais",1,"au goût","legumes",1]]},
+{id:"maquereaux-vin-blanc",nom:"Maquereaux au vin blanc",t:40,pays:"France",cat:"poisson",tags:["poisson"],ing:[["Maquereau",180,"g","viande"],["Vin blanc sec",75,"ml","epicerie"],["Carotte",0.5,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Pommes de terre",180,"g","legumes"]]},
+{id:"calamars-provencale",nom:"Calamars à la provençale",t:45,pays:"France",cat:"mer",tags:["poisson"],ing:[["Calamars",180,"g","viande"],["Tomates concassées",150,"g","epicerie"],["Ail",1.5,"gousse","legumes"],["Persil",1,"au goût","legumes",1],["Riz basmati",70,"g","epicerie"]]},
+{id:"mouclade",nom:"Mouclade charentaise",t:35,pays:"France",cat:"mer",tags:["poisson"],ing:[["Moules",500,"g","viande"],["Crème liquide",62.5,"ml","cremerie"],["Vin blanc sec",62.5,"ml","epicerie"],["Échalote",1,"pièce","legumes"],["Curry",1,"au goût","epicerie",1],["Frites surgelées",150,"g","surgeles"]]},
+{id:"omelette-fines-herbes",nom:"Omelette aux fines herbes",t:15,pays:"France",cat:"oeufs",tags:["rapide"],ing:[["Œufs",3,"pièce","cremerie"],["Beurre",10,"g","cremerie"],["Persil",1,"au goût","legumes",1],["Ciboulette",1,"au goût","legumes",1],["Salade verte",0.25,"pièce","legumes"]]},
+{id:"oeufs-cocotte",nom:"Œufs cocotte aux champignons",t:25,pays:"France",cat:"oeufs",tags:["rapide"],ing:[["Œufs",2,"pièce","cremerie"],["Crème liquide",40,"ml","cremerie"],["Gruyère râpé",20,"g","cremerie"],["Champignons de Paris",62.5,"g","legumes"],["Pain de campagne",0.25,"pièce","boulangerie"]]},
+{id:"souffle-fromage",nom:"Soufflé au fromage",t:50,pays:"France",cat:"fromage",tags:["four"],ing:[["Œufs",2,"pièce","cremerie"],["Gruyère râpé",60,"g","cremerie"],["Lait",100,"ml","cremerie"],["Beurre",20,"g","cremerie"],["Farine",20,"g","epicerie"]]},
+{id:"quiche-poireaux",nom:"Quiche aux poireaux",t:60,pays:"France",cat:"vege",tags:["four"],ing:[["Pâte brisée",0.5,"pièce","cremerie"],["Poireau",1.5,"pièce","legumes"],["Œufs",1.5,"pièce","cremerie"],["Crème liquide",80,"ml","cremerie"],["Gruyère râpé",25,"g","cremerie"]]},
+{id:"tarte-oignon",nom:"Tarte à l'oignon",t:65,pays:"France",cat:"vege",tags:["four"],ing:[["Pâte brisée",0.5,"pièce","cremerie"],["Oignon",2,"pièce","legumes"],["Œufs",1,"pièce","cremerie"],["Crème liquide",62.5,"ml","cremerie"],["Lardons fumés",30,"g","viande"]]},
+{id:"tarte-tomates-moutarde",nom:"Tarte tomates-moutarde",t:45,pays:"France",cat:"vege",tags:["four"],ing:[["Pâte feuilletée",0.5,"pièce","cremerie"],["Tomates",2,"pièce","legumes"],["Moutarde",1,"au goût","epicerie",1],["Gruyère râpé",30,"g","cremerie"],["Herbes de Provence",1,"au goût","epicerie",1]]},
+{id:"flammekueche",nom:"Flammekueche",t:45,pays:"France",cat:"porc",tags:["four"],ing:[["Farine",80,"g","epicerie"],["Crème épaisse",62.5,"ml","cremerie"],["Fromage blanc",40,"g","cremerie"],["Lardons fumés",50,"g","viande"],["Oignon",0.75,"pièce","legumes"]]},
+{id:"pissaladiere",nom:"Pissaladière",t:70,pays:"France",cat:"vege",tags:["four"],ing:[["Farine",80,"g","epicerie"],["Oignon",2,"pièce","legumes"],["Filets d'anchois",20,"g","epicerie"],["Olives noires",25,"g","epicerie"],["Thym frais",1,"au goût","legumes",1]]},
+{id:"gratin-endives-jambon",nom:"Endives au jambon",t:55,pays:"France",cat:"porc",tags:["four"],ing:[["Endive",2,"pièce","legumes"],["Jambon blanc",2,"tranche","viande"],["Lait",125,"ml","cremerie"],["Beurre",20,"g","cremerie"],["Farine",15,"g","epicerie"],["Gruyère râpé",35,"g","cremerie"]]},
+{id:"gratin-chou-fleur",nom:"Gratin de chou-fleur",t:50,pays:"France",cat:"vege",tags:["four"],ing:[["Chou-fleur",250,"g","legumes"],["Lait",125,"ml","cremerie"],["Beurre",20,"g","cremerie"],["Farine",15,"g","epicerie"],["Gruyère râpé",40,"g","cremerie"]]},
+{id:"gratin-courgettes",nom:"Gratin de courgettes",t:55,pays:"France",cat:"vege",tags:["four"],ing:[["Courgette",2,"pièce","legumes"],["Crème liquide",62.5,"ml","cremerie"],["Œufs",0.5,"pièce","cremerie"],["Gruyère râpé",30,"g","cremerie"],["Ail",0.75,"gousse","legumes"]]},
+{id:"gratin-macaronis",nom:"Gratin de macaronis",t:45,pays:"France",cat:"vege",tags:["four"],ing:[["Macaronis",90,"g","epicerie"],["Lait",137.5,"ml","cremerie"],["Beurre",20,"g","cremerie"],["Farine",15,"g","epicerie"],["Gruyère râpé",45,"g","cremerie"],["Jambon blanc",1,"tranche","viande"]]},
+{id:"tian-legumes",nom:"Tian de légumes",t:70,pays:"France",cat:"vege",tags:["four"],ing:[["Courgette",1,"pièce","legumes"],["Aubergine",0.5,"pièce","legumes"],["Tomates",2,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Huile d'olive",1,"au goût","epicerie",1],["Thym frais",1,"au goût","legumes",1]]},
+{id:"soupe-oignon-gratinee",nom:"Soupe à l'oignon gratinée",t:50,pays:"France",cat:"vege",tags:[],ing:[["Oignon",2,"pièce","legumes"],["Beurre",15,"g","cremerie"],["Farine",10,"g","epicerie"],["Bouillon de volaille",1,"au goût","epicerie",1],["Pain de campagne",0.25,"pièce","boulangerie"],["Gruyère râpé",40,"g","cremerie"]]},
+{id:"soupe-au-pistou",nom:"Soupe au pistou",t:60,pays:"France",cat:"vege",tags:[],ing:[["Haricots blancs",62.5,"g","epicerie"],["Haricots verts",80,"g","legumes"],["Courgette",0.5,"pièce","legumes"],["Carotte",0.5,"pièce","legumes"],["Tomates",1,"pièce","legumes"],["Basilic frais",1,"au goût","legumes",1],["Parmesan",20,"g","cremerie"],["Pâtes",30,"g","epicerie"]]},
+{id:"veloute-champignons",nom:"Velouté de champignons",t:35,pays:"France",cat:"vege",tags:["rapide"],ing:[["Champignons de Paris",200,"g","legumes"],["Crème liquide",50,"ml","cremerie"],["Échalote",1,"pièce","legumes"],["Pommes de terre",80,"g","legumes"],["Pain de campagne",0.25,"pièce","boulangerie"]]},
+{id:"vichyssoise",nom:"Vichyssoise",t:40,pays:"France",cat:"vege",tags:[],ing:[["Poireau",1.5,"pièce","legumes"],["Pommes de terre",150,"g","legumes"],["Crème liquide",62.5,"ml","cremerie"],["Oignon",0.5,"pièce","legumes"]]},
+{id:"potage-legumes",nom:"Potage de légumes",t:40,pays:"France",cat:"vege",tags:[],ing:[["Carotte",1,"pièce","legumes"],["Poireau",1,"pièce","legumes"],["Pommes de terre",150,"g","legumes"],["Navet",0.5,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Beurre",10,"g","cremerie"]]},
+{id:"galette-complete",nom:"Galette complète",t:30,pays:"France",cat:"oeufs",tags:["rapide"],ing:[["Farine de sarrasin",60,"g","epicerie"],["Œufs",1,"pièce","cremerie"],["Jambon blanc",1,"tranche","viande"],["Gruyère râpé",30,"g","cremerie"],["Beurre",10,"g","cremerie"],["Salade verte",0.25,"pièce","legumes"]]},
+{id:"crepes-champignons",nom:"Crêpes aux champignons",t:45,pays:"France",cat:"vege",tags:[],ing:[["Farine",50,"g","epicerie"],["Lait",125,"ml","cremerie"],["Œufs",0.5,"pièce","cremerie"],["Champignons de Paris",100,"g","legumes"],["Crème liquide",40,"ml","cremerie"],["Gruyère râpé",25,"g","cremerie"]]},
+{id:"poelee-champignons",nom:"Poêlée de champignons persillade",t:25,pays:"France",cat:"vege",tags:["rapide"],ing:[["Champignons de Paris",200,"g","legumes"],["Ail",1.5,"gousse","legumes"],["Persil",1,"au goût","legumes",1],["Beurre",20,"g","cremerie"],["Pain de campagne",0.25,"pièce","boulangerie"]]},
+{id:"salade-nicoise",nom:"Salade niçoise",t:25,pays:"France",cat:"poisson",tags:["rapide"],ing:[["Thon",60,"g","viande"],["Œufs",1,"pièce","cremerie"],["Tomates",1.5,"pièce","legumes"],["Poivron",0.5,"pièce","legumes"],["Olives noires",25,"g","epicerie"],["Haricots verts",62.5,"g","legumes"],["Salade verte",0.25,"pièce","legumes"],["Filets d'anchois",10,"g","epicerie"]]},
+{id:"salade-lyonnaise",nom:"Salade lyonnaise",t:25,pays:"France",cat:"porc",tags:["rapide"],ing:[["Salade verte",0.5,"pièce","legumes"],["Lardons fumés",60,"g","viande"],["Œufs",1,"pièce","cremerie"],["Pain de campagne",0.25,"pièce","boulangerie"],["Vinaigre",1,"au goût","epicerie",1]]},
+{id:"salade-chevre-chaud",nom:"Salade de chèvre chaud",t:25,pays:"France",cat:"fromage",tags:["rapide"],ing:[["Salade verte",0.5,"pièce","legumes"],["Fromage de chèvre",60,"g","cremerie"],["Pain de campagne",0.25,"pièce","boulangerie"],["Miel",1,"au goût","epicerie",1],["Noix",15,"g","legumes"],["Tomates",0.5,"pièce","legumes"]]},
+{id:"salade-landaise",nom:"Salade landaise",t:25,pays:"France",cat:"canard",tags:["rapide"],ing:[["Salade verte",0.5,"pièce","legumes"],["Gésiers de canard",60,"g","viande"],["Magret séché",30,"g","viande"],["Tomates",0.5,"pièce","legumes"],["Noix",15,"g","legumes"]]},
+{id:"celeri-remoulade",nom:"Céleri rémoulade",t:15,pays:"France",cat:"entree",tags:["rapide"],type:"entree",ing:[["Céleri-rave",150,"g","legumes"],["Mayonnaise",1,"au goût","epicerie",1],["Moutarde",1,"au goût","epicerie",1],["Citron",0.25,"pièce","legumes"]]},
+{id:"poireaux-vinaigrette",nom:"Poireaux vinaigrette",t:30,pays:"France",cat:"entree",tags:[],type:"entree",ing:[["Poireau",1.5,"pièce","legumes"],["Moutarde",1,"au goût","epicerie",1],["Vinaigre",1,"au goût","epicerie",1],["Œufs",0.5,"pièce","cremerie"]]},
+{id:"oeufs-mimosa",nom:"Œufs mimosa",t:20,pays:"France",cat:"entree",tags:["rapide"],type:"entree",ing:[["Œufs",1.5,"pièce","cremerie"],["Mayonnaise",1,"au goût","epicerie",1],["Ciboulette",1,"au goût","legumes",1],["Salade verte",0.25,"pièce","legumes"]]},
+{id:"carottes-rapees",nom:"Carottes râpées",t:15,pays:"France",cat:"entree",tags:["rapide"],type:"entree",ing:[["Carotte",2,"pièce","legumes"],["Citron",0.5,"pièce","legumes"],["Persil",1,"au goût","legumes",1]]},
+{id:"gougeres",nom:"Gougères",t:40,pays:"France",cat:"entree",tags:["four"],type:"entree",ing:[["Farine",40,"g","epicerie"],["Œufs",1,"pièce","cremerie"],["Beurre",30,"g","cremerie"],["Gruyère râpé",40,"g","cremerie"],["Lait",62.5,"ml","cremerie"]]},
+{id:"rillettes-cornichons",nom:"Rillettes et cornichons",t:10,pays:"France",cat:"entree",tags:["rapide"],type:"entree",ing:[["Rillettes",60,"g","viande"],["Pain de campagne",0.25,"pièce","boulangerie"],["Cornichons",30,"g","epicerie"]]},
+{id:"terrine-campagne",nom:"Terrine de campagne",t:15,pays:"France",cat:"entree",tags:["rapide"],type:"entree",ing:[["Terrine de campagne",70,"g","viande"],["Pain de campagne",0.25,"pièce","boulangerie"],["Cornichons",30,"g","epicerie"],["Salade verte",0.25,"pièce","legumes"]]},
+{id:"soupe-a-l-oignon",nom:"Velouté de potiron aux châtaignes",t:40,pays:"France",cat:"entree",tags:[],type:"entree",ing:[["Potiron",250,"g","legumes"],["Châtaignes",50,"g","legumes"],["Crème liquide",50,"ml","cremerie"],["Oignon",0.5,"pièce","legumes"]]},
+{id:"tapenade-crudites",nom:"Tapenade et crudités",t:15,pays:"France",cat:"entree",tags:["rapide"],type:"entree",ing:[["Olives noires",50,"g","epicerie"],["Filets d'anchois",10,"g","epicerie"],["Câpres",15,"g","epicerie"],["Carotte",1,"pièce","legumes"],["Concombre",0.5,"pièce","legumes"],["Pain de campagne",0.25,"pièce","boulangerie"]]},
+{id:"tarte-tatin",nom:"Tarte Tatin",t:60,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Pomme",1.3333,"pièce","legumes"],["Pâte feuilletée",0.1667,"pièce","cremerie"],["Beurre",20,"g","cremerie"],["Sucre",30,"g","epicerie"]]},
+{id:"clafoutis-cerises",nom:"Clafoutis aux cerises",t:50,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Cerises",116.6667,"g","legumes"],["Œufs",0.6667,"pièce","cremerie"],["Lait",66.6667,"ml","cremerie"],["Farine",20,"g","epicerie"],["Sucre",23.3333,"g","epicerie"]]},
+{id:"creme-brulee",nom:"Crème brûlée",t:60,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Crème liquide",83.3333,"ml","cremerie"],["Œufs",1,"pièce","cremerie"],["Sucre",23.3333,"g","epicerie"],["Vanille",1,"au goût","epicerie",1]]},
+{id:"mousse-chocolat",nom:"Mousse au chocolat",t:25,pays:"France",cat:"dessert",tags:[],type:"dessert",ing:[["Chocolat noir",41.6667,"g","epicerie"],["Œufs",1,"pièce","cremerie"],["Sucre",10,"g","epicerie"]]},
+{id:"ile-flottante",nom:"Île flottante",t:40,pays:"France",cat:"dessert",tags:[],type:"dessert",ing:[["Œufs",1,"pièce","cremerie"],["Lait",125,"ml","cremerie"],["Sucre",30,"g","epicerie"],["Vanille",1,"au goût","epicerie",1]]},
+{id:"riz-au-lait",nom:"Riz au lait",t:45,pays:"France",cat:"dessert",tags:[],type:"dessert",ing:[["Riz rond",33.3333,"g","epicerie"],["Lait",166.6667,"ml","cremerie"],["Sucre",20,"g","epicerie"],["Vanille",1,"au goût","epicerie",1]]},
+{id:"tarte-pommes",nom:"Tarte aux pommes",t:55,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Pâte brisée",0.1667,"pièce","cremerie"],["Pomme",1.1667,"pièce","legumes"],["Sucre",20,"g","epicerie"],["Beurre",13.3333,"g","cremerie"]]},
+{id:"tarte-citron-meringuee",nom:"Tarte au citron meringuée",t:70,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Pâte brisée",0.1667,"pièce","cremerie"],["Citron",0.8333,"pièce","legumes"],["Œufs",1,"pièce","cremerie"],["Sucre",41.6667,"g","epicerie"],["Beurre",20,"g","cremerie"]]},
+{id:"fondant-chocolat",nom:"Fondant au chocolat",t:35,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Chocolat noir",41.6667,"g","epicerie"],["Beurre",33.3333,"g","cremerie"],["Œufs",0.8333,"pièce","cremerie"],["Sucre",25,"g","epicerie"],["Farine",13.3333,"g","epicerie"]]},
+{id:"gateau-yaourt",nom:"Gâteau au yaourt",t:45,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Yaourt nature",0.3333,"pot","cremerie"],["Farine",50,"g","epicerie"],["Sucre",36.6667,"g","epicerie"],["Œufs",0.6667,"pièce","cremerie"],["Huile de tournesol",25,"ml","epicerie"]]},
+{id:"quatre-quarts",nom:"Quatre-quarts",t:55,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Farine",41.6667,"g","epicerie"],["Beurre",41.6667,"g","cremerie"],["Sucre",41.6667,"g","epicerie"],["Œufs",0.8333,"pièce","cremerie"]]},
+{id:"crepes-sucrees",nom:"Crêpes sucrées",t:30,pays:"France",cat:"dessert",tags:[],type:"dessert",ing:[["Farine",50,"g","epicerie"],["Lait",116.6667,"ml","cremerie"],["Œufs",0.8333,"pièce","cremerie"],["Beurre",10,"g","cremerie"],["Sucre",13.3333,"g","epicerie"]]},
+{id:"pain-perdu",nom:"Pain perdu",t:20,pays:"France",cat:"dessert",tags:["rapide"],type:"dessert",ing:[["Pain de campagne",0.1667,"pièce","boulangerie"],["Œufs",0.8333,"pièce","cremerie"],["Lait",83.3333,"ml","cremerie"],["Sucre",16.6667,"g","epicerie"],["Beurre",13.3333,"g","cremerie"]]},
+{id:"far-breton",nom:"Far breton",t:55,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Farine",30,"g","epicerie"],["Lait",125,"ml","cremerie"],["Œufs",0.8333,"pièce","cremerie"],["Sucre",25,"g","epicerie"],["Pruneaux",41.6667,"g","epicerie"]]},
+{id:"flan-patissier",nom:"Flan pâtissier",t:70,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Lait",166.6667,"ml","cremerie"],["Œufs",0.8333,"pièce","cremerie"],["Sucre",33.3333,"g","epicerie"],["Maïzena",16.6667,"g","epicerie"],["Pâte brisée",0.1667,"pièce","cremerie"]]},
+{id:"profiteroles",nom:"Profiteroles",t:60,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Farine",25,"g","epicerie"],["Œufs",0.8333,"pièce","cremerie"],["Beurre",20,"g","cremerie"],["Glace vanille",83.3333,"ml","surgeles"],["Chocolat noir",33.3333,"g","epicerie"]]},
+{id:"poires-belle-helene",nom:"Poires Belle-Hélène",t:30,pays:"France",cat:"dessert",tags:[],type:"dessert",ing:[["Poire",1,"pièce","legumes"],["Glace vanille",83.3333,"ml","surgeles"],["Chocolat noir",33.3333,"g","epicerie"],["Sucre",20,"g","epicerie"]]},
+{id:"madeleines",nom:"Madeleines",t:35,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Farine",41.6667,"g","epicerie"],["Œufs",0.8333,"pièce","cremerie"],["Beurre",36.6667,"g","cremerie"],["Sucre",33.3333,"g","epicerie"],["Citron",0.1667,"pièce","legumes"]]},
+{id:"galette-des-rois",nom:"Galette des rois",t:60,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Pâte feuilletée",0.3333,"pièce","cremerie"],["Poudre d'amandes",41.6667,"g","epicerie"],["Œufs",0.6667,"pièce","cremerie"],["Sucre",30,"g","epicerie"],["Beurre",30,"g","cremerie"]]},
+{id:"canneles",nom:"Cannelés",t:70,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Lait",83.3333,"ml","cremerie"],["Farine",16.6667,"g","epicerie"],["Sucre",41.6667,"g","epicerie"],["Œufs",0.5,"pièce","cremerie"],["Beurre",8.3333,"g","cremerie"],["Vanille",1,"au goût","epicerie",1]]},
+{id:"baba-rhum",nom:"Baba au rhum",t:60,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Farine",41.6667,"g","epicerie"],["Œufs",0.6667,"pièce","cremerie"],["Beurre",16.6667,"g","cremerie"],["Sucre",33.3333,"g","epicerie"],["Rhum",16.6667,"ml","epicerie"]]},
+{id:"charlotte-fraises",nom:"Charlotte aux fraises",t:45,pays:"France",cat:"dessert",tags:[],type:"dessert",ing:[["Fraises",83.3333,"g","legumes"],["Biscuits à la cuillère",5,"pièce","epicerie"],["Crème liquide",66.6667,"ml","cremerie"],["Sucre",20,"g","epicerie"]]},
+{id:"crumble-pommes",nom:"Crumble aux pommes",t:45,pays:"France",cat:"dessert",tags:["four"],type:"dessert",ing:[["Pomme",1.1667,"pièce","legumes"],["Farine",30,"g","epicerie"],["Beurre",25,"g","cremerie"],["Sucre",25,"g","epicerie"]]},
+{id:"poulet-roti",nom:"Poulet rôti aux herbes",t:75,pays:"France",cat:"volaille",tags:["four"],ing:[["Cuisses de poulet",180,"g","viande"],["Pommes de terre",200,"g","legumes"],["Citron",0.5,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Thym frais",1,"botte","legumes",1]]},
+{id:"bolognaise",nom:"Spaghetti bolognaise",t:45,pays:"Italie",cat:"boeuf",tags:[],ing:[["Bœuf haché",120,"g","viande"],["Tomates concassées",200,"g","epicerie"],["Oignon",0.5,"pièce","legumes"],["Carotte",0.5,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Spaghetti",100,"g","epicerie"],["Parmesan",20,"g","cremerie"]]},
+{id:"gratin-dauphinois",nom:"Gratin dauphinois",t:70,pays:"France",cat:"vege",tags:["four","végé"],ing:[["Pommes de terre",250,"g","legumes"],["Crème liquide",100,"ml","cremerie"],["Lait",50,"ml","cremerie"],["Ail",1,"gousse","legumes"],["Gruyère râpé",30,"g","cremerie"],["Noix de muscade",1,"pincée","epicerie",1]]},
+{id:"curry-pois-chiches",nom:"Curry de pois chiches au coco",t:30,pays:"Inde",cat:"vege",tags:["rapide","végé"],ing:[["Pois chiches",120,"g","epicerie"],["Lait de coco",100,"ml","epicerie"],["Épinards frais",80,"g","legumes"],["Oignon",0.5,"pièce","legumes"],["Gingembre frais",1,"pièce","legumes",1],["Curry en poudre",1,"pot","epicerie",1],["Riz basmati",80,"g","epicerie"]]},
+{id:"quiche-lorraine",nom:"Quiche lorraine",t:55,pays:"France",cat:"porc",tags:["four"],ing:[["Pâte brisée",0.5,"pièce","cremerie"],["Lardons fumés",60,"g","viande"],["Œufs",1.5,"pièce","cremerie"],["Crème liquide",80,"ml","cremerie"],["Gruyère râpé",25,"g","cremerie"],["Salade verte",0.3,"pièce","legumes"]]},
+{id:"chili-sin-carne",nom:"Chili sin carne",t:40,pays:"Mexique",cat:"vege",tags:["végé","mijoté"],ing:[["Haricots rouges",120,"g","epicerie"],["Maïs",50,"g","epicerie"],["Poivron",0.5,"pièce","legumes"],["Tomates concassées",150,"g","epicerie"],["Oignon",0.5,"pièce","legumes"],["Cumin",1,"pot","epicerie",1],["Riz basmati",70,"g","epicerie"]]},
+{id:"saumon-ecrase",nom:"Saumon & écrasé de pommes de terre",t:30,pays:"France",cat:"poisson",tags:["rapide","poisson"],ing:[["Pavé de saumon",150,"g","viande"],["Pommes de terre",200,"g","legumes"],["Beurre",20,"g","cremerie"],["Citron",0.5,"pièce","legumes"],["Aneth",1,"botte","legumes",1]]},
+{id:"ratatouille-oeufs",nom:"Ratatouille & œufs au plat",t:50,pays:"France",cat:"vege",tags:["végé"],ing:[["Courgette",1,"pièce","legumes"],["Aubergine",0.5,"pièce","legumes"],["Poivron",0.5,"pièce","legumes"],["Tomates",2,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Ail",1,"gousse","legumes"],["Œufs",2,"pièce","cremerie"]]},
+{id:"croque-salade",nom:"Croque-monsieur & salade",t:25,pays:"France",cat:"porc",tags:["rapide","four"],ing:[["Pain de mie",4,"tranche","boulangerie"],["Jambon blanc",2,"tranche","viande"],["Gruyère râpé",40,"g","cremerie"],["Lait",60,"ml","cremerie"],["Beurre",15,"g","cremerie"],["Farine",15,"g","epicerie",1],["Salade verte",0.5,"pièce","legumes"]]},
+{id:"risotto-champignons",nom:"Risotto aux champignons",t:40,pays:"Italie",cat:"vege",tags:["végé"],ing:[["Riz arborio",80,"g","epicerie"],["Champignons de Paris",150,"g","legumes"],["Échalote",1,"pièce","legumes"],["Bouillon de volaille",1,"boîte","epicerie",1],["Vin blanc sec",50,"ml","epicerie"],["Parmesan",25,"g","cremerie"]]},
+{id:"tartiflette",nom:"Tartiflette",t:65,pays:"France",cat:"porc",tags:["four"],ing:[["Pommes de terre",250,"g","legumes"],["Reblochon",112,"g","cremerie"],["Lardons fumés",50,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Crème épaisse",50,"g","cremerie"],["Vin blanc sec",25,"ml","epicerie"],["Ail",0.25,"gousse","legumes"],["Beurre",5,"g","cremerie"]]},
+{id:"dahl-corail",nom:"Dahl de lentilles corail",t:35,pays:"Inde",cat:"vege",tags:["végé","mijoté"],ing:[["Lentilles corail",90,"g","epicerie"],["Lait de coco",80,"ml","epicerie"],["Tomates concassées",100,"g","epicerie"],["Oignon",0.5,"pièce","legumes"],["Curcuma",1,"pot","epicerie",1],["Coriandre fraîche",1,"botte","legumes",1],["Riz basmati",70,"g","epicerie"]]},
+{id:"hachis-parmentier",nom:"Hachis parmentier",t:60,pays:"France",cat:"boeuf",tags:["four"],ing:[["Bœuf haché",120,"g","viande"],["Pommes de terre",250,"g","legumes"],["Lait",50,"ml","cremerie"],["Beurre",20,"g","cremerie"],["Oignon",0.5,"pièce","legumes"],["Gruyère râpé",25,"g","cremerie"]]},
+{id:"bourguignon",nom:"Bœuf bourguignon",t:210,pays:"France",cat:"boeuf",tags:["mijoté"],ing:[["Bœuf à braiser",250,"g","viande"],["Vin rouge",125,"ml","epicerie"],["Lardons fumés",33,"g","viande"],["Champignons de Paris",83,"g","legumes"],["Oignons grelots",4,"pièce","legumes"],["Carotte",0.33,"pièce","legumes"],["Ail",0.33,"gousse","legumes"],["Farine",8,"g","epicerie"],["Beurre",8,"g","cremerie"],["Bouquet garni",0.17,"botte","legumes"],["Tagliatelles",80,"g","epicerie"]]},
+{id:"pates-pesto",nom:"Pâtes au pesto & tomates cerises",t:20,pays:"Italie",cat:"vege",tags:["rapide","végé"],ing:[["Fusilli",100,"g","epicerie"],["Basilic frais",1,"botte","legumes",1],["Pignons de pin",15,"g","epicerie"],["Parmesan",25,"g","cremerie"],["Ail",1,"gousse","legumes"],["Huile d'olive",30,"ml","epicerie",1],["Tomates cerises",100,"g","legumes"]]},
+{id:"tortilla",nom:"Tortilla pommes de terre & oignons",t:35,pays:"Espagne",cat:"oeufs",tags:["végé"],ing:[["Pommes de terre",200,"g","legumes"],["Œufs",2.5,"pièce","cremerie"],["Oignon",0.5,"pièce","legumes"],["Huile d'olive",20,"ml","epicerie",1],["Salade verte",0.3,"pièce","legumes"]]},
+{id:"couscous",nom:"Couscous poulet-merguez",t:70,pays:"Maroc",cat:"volaille",tags:["mijoté"],ing:[["Cuisses de poulet",150,"g","viande"],["Merguez",2,"pièce","viande"],["Semoule",80,"g","epicerie"],["Courgette",0.5,"pièce","legumes"],["Carotte",1,"pièce","legumes"],["Navet",0.5,"pièce","legumes"],["Pois chiches",60,"g","epicerie"],["Ras el-hanout",1,"pot","epicerie",1]]},
+{id:"lasagnes-epinards",nom:"Lasagnes épinards-ricotta",t:70,pays:"Italie",cat:"vege",tags:["four","végé"],ing:[["Pâtes à lasagnes",80,"g","epicerie"],["Épinards frais",150,"g","legumes"],["Ricotta",80,"g","cremerie"],["Mozzarella",40,"g","cremerie"],["Tomates concassées",150,"g","epicerie"],["Parmesan",20,"g","cremerie"],["Oignon",0.5,"pièce","legumes"]]},
+{id:"moules-frites",nom:"Moules marinières & frites",t:35,pays:"Belgique",cat:"poisson",tags:["poisson"],ing:[["Moules",500,"g","viande"],["Frites surgelées",200,"g","surgeles"],["Échalote",1,"pièce","legumes"],["Vin blanc sec",60,"ml","epicerie"],["Crème liquide",30,"ml","cremerie"],["Persil",1,"botte","legumes",1]]},
+{id:"cesar",nom:"Salade César au poulet",t:25,pays:"États-Unis",cat:"volaille",tags:["rapide"],ing:[["Filet de poulet",130,"g","viande"],["Sucrine",0.5,"pièce","legumes"],["Parmesan",20,"g","cremerie"],["Pain de campagne",0.3,"pièce","boulangerie"],["Œufs",0.5,"pièce","cremerie"],["Moutarde",1,"pot","epicerie",1]]},
+{id:"wok-nouilles",nom:"Wok de nouilles au tofu",t:25,pays:"Chine",cat:"vege",tags:["rapide","végé"],ing:[["Nouilles chinoises",90,"g","epicerie"],["Brocoli",120,"g","legumes"],["Carotte",1,"pièce","legumes"],["Poivron",0.5,"pièce","legumes"],["Tofu",80,"g","cremerie"],["Sauce soja",1,"bouteille","epicerie",1],["Gingembre frais",1,"pièce","legumes",1]]},
+{id:"veloute-potiron",nom:"Velouté de potiron",t:35,pays:"France",cat:"vege",tags:["végé","rapide"],ing:[["Potiron",300,"g","legumes"],["Pommes de terre",100,"g","legumes"],["Oignon",0.5,"pièce","legumes"],["Crème liquide",30,"ml","cremerie"],["Pain de campagne",0.3,"pièce","boulangerie"]]},
+{id:"menemen",nom:"Menemen (œufs aux poivrons)",t:20,pays:"Turquie",cat:"oeufs",tags:["rapide","végé"],ing:[["Œufs",2,"pièce","cremerie"],["Tomates",2,"pièce","legumes"],["Poivron",1,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Huile d'olive",15,"ml","epicerie",1],["Pain de campagne",0.3,"pièce","boulangerie"]]},
+{id:"kofte",nom:"Köfte & riz pilaf",t:40,pays:"Turquie",cat:"boeuf",tags:[],ing:[["Bœuf haché",140,"g","viande"],["Oignon",0.5,"pièce","legumes"],["Persil",1,"botte","legumes",1],["Cumin",1,"pot","epicerie",1],["Riz basmati",80,"g","epicerie"],["Yaourt nature",1,"pot","cremerie"]]},
+{id:"fajitas",nom:"Fajitas de poulet",t:30,pays:"Mexique",cat:"volaille",tags:["rapide"],ing:[["Filet de poulet",130,"g","viande"],["Poivron",0.75,"pièce","legumes"],["Oignon",0.5,"pièce","legumes"],["Tortillas de blé",2,"pièce","boulangerie"],["Crème liquide",20,"ml","cremerie"],["Citron vert",0.5,"pièce","legumes"],["Paprika",1,"pot","epicerie",1]]},
+{id:"quesadillas",nom:"Quesadillas & guacamole",t:20,pays:"Mexique",cat:"vege",tags:["rapide","végé"],ing:[["Tortillas de blé",2,"pièce","boulangerie"],["Cheddar",50,"g","cremerie"],["Avocat",0.75,"pièce","legumes"],["Citron vert",0.5,"pièce","legumes"],["Tomates",1,"pièce","legumes"],["Oignon",0.25,"pièce","legumes"]]},
+{id:"teriyaki",nom:"Poulet teriyaki & riz",t:25,pays:"Japon",cat:"volaille",tags:["rapide"],ing:[["Filet de poulet",140,"g","viande"],["Sauce soja",1,"bouteille","epicerie",1],["Miel",1,"pot","epicerie",1],["Riz basmati",80,"g","epicerie"],["Brocoli",100,"g","legumes"],["Graines de sésame",1,"pot","epicerie",1]]},
+{id:"pad-thai",nom:"Pad thaï aux crevettes",t:30,pays:"Thaïlande",cat:"poisson",tags:["rapide","poisson"],ing:[["Nouilles de riz",90,"g","epicerie"],["Crevettes",100,"g","viande"],["Œufs",1,"pièce","cremerie"],["Cacahuètes",15,"g","epicerie"],["Citron vert",0.5,"pièce","legumes"],["Sauce soja",1,"bouteille","epicerie",1],["Oignon nouveau",1,"botte","legumes",1]]},
+{id:"moussaka",nom:"Moussaka",t:90,pays:"Grèce",cat:"boeuf",tags:["four"],ing:[["Aubergine",1,"pièce","legumes"],["Bœuf haché",120,"g","viande"],["Tomates concassées",150,"g","epicerie"],["Oignon",0.5,"pièce","legumes"],["Lait",80,"ml","cremerie"],["Beurre",15,"g","cremerie"],["Farine",15,"g","epicerie",1],["Gruyère râpé",25,"g","cremerie"]]},
+{id:"salade-grecque",nom:"Salade grecque",t:15,pays:"Grèce",cat:"vege",tags:["rapide","végé"],ing:[["Tomates",2,"pièce","legumes"],["Concombre",0.5,"pièce","legumes"],["Feta",60,"g","cremerie"],["Olives noires",40,"g","epicerie"],["Oignon",0.25,"pièce","legumes"],["Huile d'olive",15,"ml","epicerie",1],["Pain de campagne",0.3,"pièce","boulangerie"]]},
+{id:"houmous-falafels",nom:"Houmous & falafels",t:40,pays:"Liban",cat:"vege",tags:["végé"],ing:[["Pois chiches",130,"g","epicerie"],["Ail",1,"gousse","legumes"],["Tahini",1,"pot","epicerie",1],["Citron",0.5,"pièce","legumes"],["Persil",1,"botte","legumes",1],["Pain pita",1.5,"pièce","boulangerie"],["Tomates",1,"pièce","legumes"]]},
+{id:"riz-cantonais",nom:"Riz cantonais",t:25,pays:"Chine",cat:"porc",tags:["rapide"],ing:[["Riz basmati",90,"g","epicerie"],["Œufs",1,"pièce","cremerie"],["Petits pois",50,"g","surgeles"],["Jambon blanc",1,"tranche","viande"],["Oignon nouveau",1,"botte","legumes",1],["Sauce soja",1,"bouteille","epicerie",1]]},
+{id:"bibimbap",nom:"Bibimbap au bœuf",t:40,pays:"Corée",cat:"boeuf",tags:[],ing:[["Bœuf haché",110,"g","viande"],["Riz basmati",80,"g","epicerie"],["Carotte",0.5,"pièce","legumes"],["Courgette",0.5,"pièce","legumes"],["Épinards frais",60,"g","legumes"],["Œufs",1,"pièce","cremerie"],["Sauce soja",1,"bouteille","epicerie",1],["Graines de sésame",1,"pot","epicerie",1]]},
+{id:"tajine",nom:"Tajine de poulet citron-olives",t:75,pays:"Maroc",cat:"volaille",tags:["mijoté"],ing:[["Cuisses de poulet",170,"g","viande"],["Citron",0.5,"pièce","legumes"],["Olives vertes",40,"g","epicerie"],["Oignon",0.5,"pièce","legumes"],["Semoule",80,"g","epicerie"],["Ras el-hanout",1,"pot","epicerie",1],["Carotte",0.5,"pièce","legumes"]]},
+{id:"pizza",nom:"Pizza margherita maison",t:60,pays:"Italie",cat:"vege",tags:["four","végé"],ing:[["Farine",120,"g","epicerie"],["Levure de boulanger",1,"sachet","epicerie",1],["Tomates concassées",100,"g","epicerie"],["Mozzarella",60,"g","cremerie"],["Basilic frais",1,"botte","legumes",1],["Huile d'olive",15,"ml","epicerie",1]]},
+{id:"burger",nom:"Burger maison & frites",t:30,pays:"États-Unis",cat:"boeuf",tags:["rapide"],ing:[["Bœuf haché",130,"g","viande"],["Pain burger",1,"pièce","boulangerie"],["Cheddar",30,"g","cremerie"],["Tomates",0.5,"pièce","legumes"],["Salade verte",0.25,"pièce","legumes"],["Oignon",0.25,"pièce","legumes"],["Frites surgelées",150,"g","surgeles"]]}
+];
+const HORS=[{id:"restes",nom:"Restes de la veille"},{id:"dehors",nom:"Au restaurant / dehors"}];
+const REPAS=[["midi","M"],["soir","S"]];
+const DOW=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+
+/* ---------- dates ---------- */
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function dateDe(j){return new Date(j+"T12:00:00");}
+function lundiDe(d){const x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
+function noSemaine(d){const t=new Date(d);t.setHours(0,0,0,0);t.setDate(t.getDate()+3-((t.getDay()+6)%7));const s=new Date(t.getFullYear(),0,4);return 1+Math.round(((t-s)/86400000-3+((s.getDay()+6)%7))/7);}
+function fmt(d){return d.toLocaleDateString("fr-FR",{day:"numeric",month:"long"});}
+const AUJ=iso(new Date());
+
+/* ---------- état ---------- */
+const KEY="semainier-v2";
+let S={couverts:4,repas:{},done:{},portee:"semaine",vue:"mois",perso:[]};
+try{
+  const s=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(s&&typeof s==="object")S=Object.assign(S,s);
+  else{ /* reprise de l'ancienne version */
+    const v1=JSON.parse(localStorage.getItem("semainier-v1")||"null");
+    if(v1&&v1.plans){S.couverts=v1.couverts||4;Object.values(v1.plans).forEach(p=>Object.assign(S.repas,p));}
+  }
+}catch(e){}
+if(!S.maj&&Object.keys(S.repas).length)S.maj=Date.now();
+
+/* ---------- enregistrement local + synchronisation du compte ---------- */
+const contenu=()=>JSON.stringify({couverts:S.couverts,repas:S.repas,done:S.done,perso:S.perso});
+let dernier=contenu(),REF=null,tSync=null;
+function etatSync(cls,txt){const n=document.getElementById("sync");if(n){n.className="sync "+cls;n.textContent=txt;}}
+function save(){
+  const c=contenu(),change=c!==dernier;
+  if(change){dernier=c;S.maj=Date.now();}
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  if(change)pousser();
+}
+function pousser(){
+  if(!REF)return;
+  clearTimeout(tSync);
+  tSync=setTimeout(()=>{
+    REF.set({maj:S.maj,couverts:S.couverts,repas:S.repas,done:S.done,perso:S.perso})
+      .then(()=>etatSync("ok","Synchronisé"))
+      .catch(()=>etatSync("souci","Enregistré ici seulement"));
+  },700);
+}
+async function initSync(){
+  let db=null;
+  try{if(window.claude&&claude.use)db=await claude.use("db");}catch(e){}
+  if(!db)return etatSync("","Cet appareil seulement");
+  REF=db.doc("menu/plan");
+  REF.onSnapshot(snap=>{
+    const d=snap.exists?snap.data():null;
+    if(!d){if(Object.keys(S.repas).length||S.perso.length){S.maj=S.maj||Date.now();pousser();}else etatSync("ok","Synchronisé");return;}
+    const dm=d.maj||0;
+    if(dm>(S.maj||0)){
+      S.couverts=d.couverts||S.couverts;S.repas=d.repas||{};S.done=d.done||{};S.perso=d.perso||[];S.maj=dm;
+      dernier=contenu();
+      try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+      rendu();etatSync("ok","Synchronisé");
+    }else if(dm<(S.maj||0))pousser();
+    else etatSync("ok","Synchronisé");
+  },()=>{REF=null;etatSync("souci","Hors ligne — cet appareil");});
+}
+const $=s=>document.querySelector(s);
+const plat=id=>PLATS.find(p=>p.id===id)||(S.perso||[]).find(p=>p.id===id);
+const horsPlat=id=>HORS.find(h=>h.id===id);
+
+let vue=(()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),1,12);})();
+let selLundi=iso(lundiDe(new Date()));
+
+/* ---------- portée de la liste ---------- */
+function bornes(){
+  if(S.portee==="mois"){
+    const a=new Date(vue.getFullYear(),vue.getMonth(),1,12),b=new Date(vue.getFullYear(),vue.getMonth()+1,0,12);
+    return[iso(a),iso(b),"Mois de "+vue.toLocaleDateString("fr-FR",{month:"long",year:"numeric"})];
+  }
+  const a=dateDe(selLundi),b=new Date(a);b.setDate(a.getDate()+6);
+  return[iso(a),iso(b),"Semaine "+noSemaine(a)+" · du "+fmt(a)+" au "+fmt(b)];
+}
+const cleP=()=>S.portee==="mois"?"M:"+vue.getFullYear()+"-"+(vue.getMonth()+1):"S:"+selLundi;
+const coches=()=>S.done[cleP()]||(S.done[cleP()]=[]);
+
+/* ---------- agrégation ---------- */
+function agreger(){
+  const[a,b]=bornes(),map=new Map();
+  for(const cle in S.repas){
+    const j=cle.split("|")[0];
+    if(j<a||j>b)continue;
+    const d=plat(S.repas[cle]);if(!d)continue;
+    for(const[nom,q,u,r,fixe]of d.ing){
+      const k=nom+"|"+u;
+      const it=map.get(k)||{k,nom,u,r,q:0,fixe:!!fixe,pour:[]};
+      if(fixe)it.q=Math.max(it.q,q);else it.q+=q*S.couverts;
+      if(!it.pour.includes(d.nom))it.pour.push(d.nom);
+      map.set(k,it);
+    }
+  }
+  const out={};
+  for(const[,it]of map)(out[it.r]=out[it.r]||[]).push(it);
+  for(const r in out)out[r].sort((x,y)=>x.nom.localeCompare(y.nom,"fr"));
+  return out;
+}
+function arrondir(v,u){
+  if(u==="g"||u==="ml")return v>=100?Math.round(v/10)*10:Math.max(5,Math.round(v/5)*5);
+  if(u==="tranche"||u==="gousse")return Math.ceil(v);
+  if(u==="pièce")return Math.max(0.5,Math.round(v*2)/2);
+  return v;
+}
+function quantite(it){
+  let q=arrondir(it.q,it.u),u=it.u;
+  if(u==="g"&&q>=1000){q=Math.round(q/100)/10;u="kg";}
+  else if(u==="ml"&&q>=1000){q=Math.round(q/100)/10;u="L";}
+  const nb=String(Math.round(q*10)/10).replace(".",",");
+  if(u==="pièce")return nb;
+  if(it.fixe&&["pot","bouteille","boîte","botte","pincée","sachet","au goût"].includes(u))return u;
+  const val=Math.round(q*10)/10;
+  return nb+" "+(val>1&&["tranche","gousse","botte"].includes(u)?u+"s":u);
+}
+
+/* ---------- calendrier ---------- */
+function cellules(){
+  const p=new Date(vue.getFullYear(),vue.getMonth(),1,12);
+  const debut=lundiDe(p);
+  const fin=new Date(vue.getFullYear(),vue.getMonth()+1,0,12);
+  const cases=[];const d=new Date(debut);
+  while(d<=fin||cases.length%7!==0){cases.push(new Date(d));d.setDate(d.getDate()+1);}
+  return cases;
+}
+function renduCal(){
+  [...$("#vue-bascule").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.vue===S.vue));
+  document.querySelector(".cal-cadre").classList.toggle("nu",S.vue==="semaine");
+  if(S.vue==="semaine")return renduVueSemaine();
+  $("#mois-titre").textContent=vue.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  const ajdMois=new Date();
+  $("#retour").hidden=vue.getFullYear()===ajdMois.getFullYear()&&vue.getMonth()===ajdMois.getMonth();
+  const cases=cellules();
+  let html=`<div></div>`+DOW.map(j=>`<div class="dow">${j}</div>`).join("");
+  cases.forEach((d,i)=>{
+    const j=iso(d),l=iso(lundiDe(d));
+    if(i%7===0)html+=`<div class="sem"><button data-sem="${l}" aria-pressed="${l===selLundi}" title="Liste de courses de cette semaine">S${noSemaine(d)}</button></div>`;
+    const hors=d.getMonth()!==vue.getMonth();
+    html+=`<div class="cel ${hors?"hors":""} ${l===selLundi?"sel":""} ${j===AUJ?"auj":""}">
+      <span class="jj">${d.getDate()}</span>`+
+      REPAS.map(([r,lab])=>{
+        const id=S.repas[j+"|"+r],pl=plat(id),h=horsPlat(id);
+        const cls=!id?"libre":(h?"repos":"");
+        return `<button class="ligne ${cls}" data-cle="${j}|${r}">
+          <span class="r">${lab}</span><span class="n">${pl?pl.nom:(h?h.nom:"+")}</span></button>`;
+      }).join("")+`</div>`;
+  });
+  $("#cal").innerHTML=html;
+}
+function renduVueSemaine(){
+  const a=dateDe(selLundi),b=new Date(a);b.setDate(a.getDate()+6);
+  $("#mois-titre").textContent="Semaine "+noSemaine(a)+" · "+fmt(a)+" – "+fmt(b);
+  $("#retour").hidden=selLundi===iso(lundiDe(new Date()));
+  const ds=Array.from({length:7},(_,i)=>{const d=new Date(a);d.setDate(a.getDate()+i);return d;});
+  $("#cal").innerHTML=`<div class="semaine">`+ds.map((d,i)=>{
+    const j=iso(d);
+    return `<article class="jour ${j===AUJ?"auj":""} ${j<AUJ?"passe":""}">
+      <div class="jdate">
+        <span class="dow2">${DOW[i]}</span>
+        <span class="jj2">${d.getDate()}</span>
+        <span class="mois2">${d.toLocaleDateString("fr-FR",{month:"short"}).replace(".","")}</span>
+      </div>
+      <div class="slots">`+REPAS.map(([r])=>{
+        const id=S.repas[j+"|"+r],pl=plat(id),h=horsPlat(id),lab=r==="midi"?"Midi":"Soir";
+        if(!id)return `<button class="slot libre" data-cle="${j}|${r}"><span class="r2">${lab}</span><span class="n2">+ Ajouter un plat</span></button>`;
+        return `<button class="slot" data-cle="${j}|${r}"><span class="r2">${lab}</span>
+          <span class="n2">${pl?pl.nom:h.nom}</span>
+          <span class="s2">${pl?pl.pays+" · "+pl.t+" min":"sans courses"}</span></button>`;
+      }).join("")+`</div></article>`;
+  }).join("")+`</div>`;
+}
+function renduListe(){
+  const g=agreger(),tous=Object.values(g).flat(),[a,b,titre]=bornes();
+  const nb=Object.keys(S.repas).filter(c=>{const j=c.split("|")[0];return j>=a&&j<=b&&plat(S.repas[c]);}).length;
+  $("#periode").textContent=titre+(tous.length?` · ${nb} repas`:"");
+  [...$("#portee").children].forEach(b2=>b2.setAttribute("aria-pressed",b2.dataset.portee===S.portee));
+  $("#saut").hidden=!tous.length;$("#sautn").textContent=tous.length;
+  if(!tous.length){
+    $("#rayons").innerHTML=`<div class="vide-liste"><b>Rien de prévu sur cette période.</b>Clique sur une case du calendrier pour poser un plat — les ingrédients arrivent ici, additionnés et rangés par rayon.</div>`;
+    return;
+  }
+  const done=coches();
+  $("#rayons").innerHTML=RAYONS.filter(([k])=>g[k]).map(([k,l])=>
+    `<div class="rayon"><h3>${l}</h3>`+g[k].map(it=>{
+      const ok=done.includes(it.k);
+      const id="c"+Math.abs([...it.k].reduce((h,c)=>h*31+c.charCodeAt(0)|0,7));
+      return `<div class="art ${ok?"ok":""}">
+        <input type="checkbox" id="${id}" data-k="${it.k}" ${ok?"checked":""}>
+        <label for="${id}" title="Pour : ${it.pour.join(", ")}">${it.nom}</label>
+        <span class="q">${quantite(it)}</span></div>`;
+    }).join("")+`</div>`).join("");
+}
+function rendu(){$("#npers").textContent=S.couverts;renduCal();renduListe();save();}
+
+/* ---------- sélecteur ---------- */
+let cible=null,filtrePays="tout",filtreType="plat",q="";
+const TYPES=[["plat","Plats"],["entree","Entrées"],["dessert","Desserts"],["tout","Tout"]];
+const typeDe=p=>p.type||"plat";
+function ouvrir(cle){
+  cible=cle;q="";filtrePays="tout";
+  const[j,r]=cle.split("|");
+  $("#creneau").textContent=dateDe(j).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+" · "+(r==="midi"?"midi":"soir");
+  $("#recherche").value="";
+  renduChoix();
+  $("#voile").hidden=false;
+  $("#recherche").focus();
+}
+function fermer(){$("#voile").hidden=true;cible=null;editId=null;}
+const sansAccent=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+
+/* ---------- lecture d'une recette écrite ---------- */
+const UNITES=[
+  [/^(kg|kilos?|kilogrammes?)$/,"g",1000],[/^(g|gr|grammes?)$/,"g",1],
+  [/^(l|litres?)$/,"ml",1000],[/^(cl)$/,"ml",10],[/^(dl)$/,"ml",100],[/^(ml|millilitres?)$/,"ml",1],
+  [/^(c\.?\s*[àa]\.?\s*s\.?|c\.?\s*[àa]\s*soupe|cas|cuill[eè]res?\s+[àa]\s+soupe)$/,"c. à soupe",1],
+  [/^(c\.?\s*[àa]\.?\s*c\.?|c\.?\s*[àa]\s*caf[ée]|cac|cuill[eè]res?\s+[àa]\s+caf[ée])$/,"c. à café",1],
+  [/^(pinc[ée]es?)$/,"pincée",1],[/^(sachets?)$/,"sachet",1],[/^(pots?)$/,"pot",1],
+  [/^(bo[iî]tes?|conserves?)$/,"boîte",1],[/^(bouteilles?)$/,"bouteille",1],[/^(bottes?|bouquets?)$/,"botte",1],
+  [/^(gousses?)$/,"gousse",1],[/^(tranches?)$/,"tranche",1],[/^(pi[eè]ces?|unit[ée]s?)$/,"pièce",1]
+];
+const RAYON_MOTS=[
+  ["viande",["boeuf","poulet","porc","agneau","veau","dinde","jambon","lardon","saucisse","merguez","steak","viande","poisson","saumon","cabillaud","thon","crevette","moule","gambas","escalope","cuisse","chorizo","canard","bacon","truite","colin","calamar","filet de","haché"]],
+  ["cremerie",["lait","creme","beurre","fromage","gruyere","parmesan","mozzarella","feta","yaourt","oeuf","ricotta","cheddar","reblochon","emmental","comte","mascarpone","tofu","pate brisee","pate feuilletee","chevre","raclette"]],
+  ["legumes",["tomate","oignon","ail","carotte","courgette","aubergine","poivron","pomme de terre","patate","salade","laitue","epinard","champignon","citron","pomme","banane","poire","poireau","brocoli","chou","concombre","echalote","persil","basilic","coriandre","menthe","thym","romarin","gingembre","avocat","potiron","courge","navet","haricot","radis","betterave","fraise","orange","celeri","fenouil","mais doux","roquette","sucrine","panais","patate douce"]],
+  ["boulangerie",["pain","baguette","tortilla","pita","brioche","burger","croissant","wrap","buns"]],
+  ["surgeles",["surgel","frites","glace","petits pois","poelee"]]
+];
+function rayonDe(nom){
+  const n=sansAccent(nom);
+  for(const p of PLATS)for(const i of p.ing)if(sansAccent(i[0])===n)return i[3];
+  for(const[r,mots]of RAYON_MOTS)if(mots.some(m=>n.includes(m)))return r;
+  for(const p of PLATS)for(const i of p.ing){const a=sansAccent(i[0]);if(a.includes(n)||n.includes(a))return i[3];}
+  return "epicerie";
+}
+function lireLigne(l){
+  let s=l.replace(/^[\s\-–—•*·]+/,"").replace(/\s+/g," ").trim();
+  if(!s)return null;
+  const m=s.match(/^(\d+\s*\/\s*\d+|\d+[.,]?\d*)\s*(.*)$/);
+  let q=null,reste=s;
+  if(m){
+    q=m[1].includes("/")?(parseFloat(m[1].split("/")[0])/parseFloat(m[1].split("/")[1])):parseFloat(m[1].replace(",","."));
+    reste=m[2];
+  }
+  let unite="pièce",fixe=0;
+  const mu=reste.match(/^([A-Za-zÀ-ÿ.]+(?:\s+[àa]\s+[A-Za-zÀ-ÿ]+)?|c\.?\s?[àa]\.?\s?[sc]\.?)\s*(.*)$/);
+  if(mu){
+    const cand=mu[1].toLowerCase().replace(/\.$/,"");
+    for(const[re,u,mult]of UNITES)if(re.test(cand)||re.test(cand+".")){unite=u;if(q!=null)q*=mult;reste=mu[2];break;}
+  }
+  reste=reste.replace(/^(de\s+la\s+|de\s+l['’]|du\s+|des\s+|de\s+|d['’])/i,"").trim();
+  if(!reste)return null;
+  if(q==null){q=1;fixe=1;unite="au goût";}
+  const nom=reste.charAt(0).toUpperCase()+reste.slice(1);
+  return [nom,q,unite,rayonDe(nom),fixe];
+}
+function lireRecette(brut,pour){
+  const out=[];
+  brut.split(/\n/).forEach(l=>{
+    const r=lireLigne(l);
+    if(!r)return;
+    if(!r[4])r[1]=r[1]/Math.max(1,pour);
+    out.push(r);
+  });
+  return out;
+}
+function renduChoix(){
+  $("#recherche").hidden=false;$("#cuisines").hidden=false;$("#types").hidden=false;
+  $("#types").innerHTML=TYPES.map(([k,l])=>`<button class="puce" data-type="${k}" aria-pressed="${filtreType===k}">${l}</button>`).join("");
+  const pays=[["tout","Toutes"],["maison","Mes recettes"]].concat([...new Set(PLATS.map(p=>p.pays))].sort((a,b)=>a.localeCompare(b,"fr")).map(p=>[p,p]));
+  $("#cuisines").innerHTML=pays.map(([k,l])=>`<button class="puce" data-pays="${k}" aria-pressed="${filtrePays===k}">${l}</button>`).join("");
+  let liste=PLATS.concat(S.perso);
+  if(filtreType!=="tout")liste=liste.filter(p=>typeDe(p)===filtreType);
+  if(filtrePays==="maison")liste=S.perso.slice();
+  else if(filtrePays!=="tout")liste=liste.filter(p=>p.pays===filtrePays);
+  if(q)liste=liste.filter(p=>sansAccent(p.nom).includes(sansAccent(q))||sansAccent(p.pays).includes(sansAccent(q))||p.ing.some(i=>sansAccent(i[0]).includes(sansAccent(q))));
+  liste.sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
+  const occupe=cible&&S.repas[cible];
+  const ligne=p=>p.maison
+    ? `<div class="opt-row"><button class="opt" data-plat="${p.id}"><span class="t">${p.nom}</span><span class="maison">Ma recette</span><span class="d">${p.ing.length} ingrédients</span></button><button class="mini" data-edit="${p.id}" title="Modifier cette recette">✎</button></div>`
+    : `<button class="opt" data-plat="${p.id}"><span class="t">${p.nom}</span><span class="p">${p.pays}</span><span class="d">${p.t} min</span></button>`;
+  $("#choix").innerHTML=
+    `<button class="opt ecrire" id="nouvelle"><span class="t">✎ Écrire ma recette</span><span class="d">colle tes ingrédients, j'en fais la liste</span></button>`
+    +(occupe&&!q?`<button class="opt retirer" data-plat=""><span class="t">Vider ce créneau</span></button>`:"")
+    +liste.map(ligne).join("")
+    +(q||filtrePays==="maison"?"":`<div class="sep">Sans cuisiner</div>`+HORS.map(h=>`<button class="opt" data-plat="${h.id}"><span class="t">${h.nom}</span><span class="d">aucun ingrédient</span></button>`).join(""))
+    +(liste.length?"":`<div class="vide-liste"><b>Aucun plat.</b>Écris ta propre recette, ou essaie un autre mot.</div>`);
+}
+
+/* ---------- écrire une recette ---------- */
+let editId=null;
+function ouvrirForm(id){
+  editId=id||null;
+  const r=id?S.perso.find(p=>p.id===id):null;
+  $("#recherche").hidden=true;$("#cuisines").hidden=true;$("#types").hidden=true;
+  $("#choix").innerHTML=`<div class="form">
+    <div class="champ"><span>Nom du plat</span>
+      <div class="ligne-nom">
+        <input id="f-nom" value="${r?r.nom.replace(/"/g,"&quot;"):""}" placeholder="Blanquette de veau">
+        <button class="ia" id="f-ia" ${IA?"":"hidden"}>Trouver les ingrédients</button>
+      </div>
+      <span class="ia-etat" id="f-ia-etat"></span>
+    </div>
+    <div class="duo">
+      <div class="champ"><span>Cuisine</span><input id="f-pays" value="${r?r.pays.replace(/"/g,"&quot;"):""}" placeholder="Maison"></div>
+      <div class="champ"><span>Durée (min)</span><input id="f-temps" type="number" min="0" value="${r?r.t:""}" placeholder="45"></div>
+      <div class="champ"><span>Pour X personnes</span><input id="f-pour" type="number" min="1" max="20" value="${r?r.pour:4}"></div>
+    </div>
+    <div class="champ"><span>Ingrédients — un par ligne</span>
+      <textarea id="f-ing" placeholder="500 g de bœuf haché&#10;2 oignons&#10;1 boîte de tomates concassées&#10;20 cl de crème liquide&#10;2 gousses d'ail&#10;sel, poivre">${r?r.brut:""}</textarea>
+    </div>
+    <p class="aide">Tape un nom de plat et clique <b>Trouver les ingrédients</b> : Claude écrit la liste, tu la corriges. Ou écris-la toi-même. Les quantités valent pour le nombre de personnes indiqué ci-dessus ; elles seront recalculées pour tes <b>${S.couverts} couverts</b>. Formats compris : <code>500 g</code>, <code>1,5 kg</code>, <code>20 cl</code>, <code>2 gousses</code>, <code>1/2 citron</code>, <code>3 oignons</code>. Une ligne sans quantité passe en « au goût ».</p>
+    <div id="f-apercu"></div>
+    <p class="err" id="f-err" hidden></p>
+    <div class="form-actions">
+      ${r?`<button class="danger" id="f-del">Supprimer</button>`:""}
+      <span class="spacer"></span>
+      <button class="bouton sourdine" id="f-annul">Annuler</button>
+      <button class="bouton" id="f-save">${cible?"Enregistrer et placer":"Enregistrer"}</button>
+    </div>
+  </div>`;
+  $("#f-ing").addEventListener("input",apercu);
+  $("#f-pour").addEventListener("input",apercu);
+  $("#f-nom").addEventListener("keydown",e=>{if(e.key==="Enter"&&IA&&!$("#f-ing").value.trim()){e.preventDefault();demander();}});
+  apercu();
+  $("#f-nom").focus();
+}
+
+/* ---------- demander la recette à Claude ---------- */
+let IA=null;
+if(window.claude&&claude.use)claude.use("sample").then(s=>{
+  IA=s;
+  const b=document.getElementById("f-ia");if(b&&IA)b.hidden=false;
+}).catch(()=>{});
+const SOUCIS={
+  rate_limited:"Trop de demandes d'un coup — réessaie dans un moment.",
+  usage_limit:"Ta limite d'utilisation Claude est atteinte pour l'instant.",
+  cancelled:"",
+  invalid_json:"Réponse illisible — relance, ou écris les ingrédients à la main.",
+  refused:"Claude n'a pas voulu répondre à cette demande."
+};
+let ctlIA=null;
+async function demander(){
+  const nom=$("#f-nom").value.trim();
+  const etat=$("#f-ia-etat"),btn=$("#f-ia");
+  if(!IA)return;
+  if(!nom){etat.className="ia-etat souci";etat.textContent="Écris d'abord le nom du plat.";return;}
+  const pour=Math.max(1,parseInt($("#f-pour").value,10)||4);
+  ctlIA=new AbortController();
+  btn.disabled=true;etat.className="ia-etat";etat.textContent="Claude cherche la recette…";
+  try{
+    const r=await IA.json(
+      `Donne la liste des ingrédients de la recette « ${nom} », pour ${pour} personnes.\n`+
+      `Réponds uniquement par un objet JSON de cette forme :\n`+
+      `{"nom":"Blanquette de veau","cuisine":"France","minutes":90,"ingredients":["800 g d'épaule de veau","3 carottes","20 cl de crème liquide","2 gousses d'ail","sel"]}\n`+
+      `Règles : une chaîne par ingrédient, écrite « quantité unité nom » ; unités métriques (g, kg, ml, cl, cuillère à soupe, cuillère à café, gousse, tranche, botte, pincée) ; pas d'unité pour ce qui se compte à la pièce (« 3 carottes ») ; 5 à 15 ingrédients ; aucune étape de préparation ; pour le sel, le poivre et les épices à doser, écris juste leur nom sans quantité ; "cuisine" = le pays d'origine, "minutes" = durée totale en nombre entier.`,
+      {modelTier:"quick",signal:ctlIA.signal}
+    );
+    const lignes=(r&&Array.isArray(r.ingredients)?r.ingredients:[]).map(x=>String(x).trim()).filter(Boolean);
+    if(!lignes.length){etat.className="ia-etat souci";etat.textContent="Rien trouvé pour ce plat — précise le nom, ou écris les ingrédients toi-même.";return;}
+    if(r.nom&&!$("#f-nom").dataset.fige)$("#f-nom").value=String(r.nom).slice(0,80);
+    if(r.cuisine)$("#f-pays").value=String(r.cuisine).slice(0,30);
+    if(r.minutes)$("#f-temps").value=parseInt(r.minutes,10)||"";
+    const actuel=$("#f-ing").value.trim();
+    $("#f-ing").value=actuel?actuel+"\n"+lignes.join("\n"):lignes.join("\n");
+    apercu();
+    etat.className="ia-etat";etat.textContent="Relis et corrige si besoin — ce sont des quantités pour "+pour+" personnes.";
+  }catch(e){
+    if(e&&["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)){
+      IA=null;btn.hidden=true;etat.textContent="";return;
+    }
+    etat.className="ia-etat souci";
+    etat.textContent=(e&&SOUCIS[e.code])||"Ça n'a pas marché — écris les ingrédients à la main.";
+  }finally{btn.disabled=false;ctlIA=null;}
+}
+function apercu(){
+  const brut=$("#f-ing").value,pour=Math.max(1,parseInt($("#f-pour").value,10)||4);
+  const ing=lireRecette(brut,pour);
+  if(!ing.length){$("#f-apercu").innerHTML="";return;}
+  const noms=Object.fromEntries(RAYONS);
+  $("#f-apercu").innerHTML=`<div class="apercu"><h4>Ce que je vais mettre dans la liste — pour ${S.couverts} couverts</h4><ul>`+
+    ing.map(i=>`<li>${i[0]} — ${quantite({q:i[4]?i[1]:i[1]*S.couverts,u:i[2],fixe:!!i[4]})} <span class="ry">· ${noms[i[3]]}</span></li>`).join("")+`</ul></div>`;
+}
+function sauver(){
+  const nom=$("#f-nom").value.trim(),pour=Math.max(1,parseInt($("#f-pour").value,10)||4);
+  const brut=$("#f-ing").value,ing=lireRecette(brut,pour);
+  const err=m=>{const e=$("#f-err");e.textContent=m;e.hidden=false;};
+  if(!nom)return err("Il manque le nom du plat.");
+  if(!ing.length)return err("Écris au moins un ingrédient, une ligne par ingrédient.");
+  const r={
+    id:editId||("perso-"+Date.now().toString(36)),maison:true,nom,
+    pays:$("#f-pays").value.trim()||"Maison",t:parseInt($("#f-temps").value,10)||30,
+    cat:"maison",tags:[],pour,brut,ing
+  };
+  const i=S.perso.findIndex(p=>p.id===r.id);
+  if(i>=0)S.perso[i]=r;else S.perso.push(r);
+  if(cible)S.repas[cible]=r.id;
+  fermer();rendu();toast(editId?"Recette mise à jour":"Recette enregistrée");
+}
+function supprimer(){
+  const id=editId;if(!id)return;
+  S.perso=S.perso.filter(p=>p.id!==id);
+  Object.keys(S.repas).forEach(c=>{if(S.repas[c]===id)delete S.repas[c];});
+  fermer();rendu();toast("Recette supprimée");
+}
+
+/* ---------- actions ---------- */
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2100);}
+function joursSemaine(){const a=dateDe(selLundi);return Array.from({length:7},(_,i)=>{const d=new Date(a);d.setDate(a.getDate()+i);return iso(d);});}
+function remplir(){
+  const js=joursSemaine(),pris=new Set(),cats={},ajout=[];
+  js.forEach(j=>REPAS.forEach(([r])=>{const d=plat(S.repas[j+"|"+r]);if(d){pris.add(d.id);cats[d.cat]=(cats[d.cat]||0)+1;}}));
+  const pool=PLATS.filter(d=>!pris.has(d.id)&&typeDe(d)==="plat");
+  for(let i=pool.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[pool[i],pool[k]]=[pool[k],pool[i]];}
+  js.forEach(j=>REPAS.forEach(([r])=>{
+    const cle=j+"|"+r;
+    if(S.repas[cle])return;
+    let idx=pool.findIndex(x=>(cats[x.cat]||0)<3&&(r!=="midi"||x.t<=45));
+    if(idx<0)idx=pool.findIndex(x=>(cats[x.cat]||0)<3);
+    if(idx<0)return;
+    const d=pool.splice(idx,1)[0];
+    cats[d.cat]=(cats[d.cat]||0)+1;S.repas[cle]=d.id;ajout.push(d);
+  }));
+  rendu();toast(ajout.length?ajout.length+" repas ajoutés":"Semaine déjà complète");
+}
+document.addEventListener("click",e=>{
+  if(e.target.closest("#nouvelle")){ouvrirForm(null);return;}
+  const ed=e.target.closest("[data-edit]");
+  if(ed){ouvrirForm(ed.dataset.edit);return;}
+  if(e.target.closest("#f-ia"))return demander();
+  if(e.target.closest("#f-save"))return sauver();
+  if(e.target.closest("#f-del"))return supprimer();
+  if(e.target.closest("#f-annul")){editId=null;renduChoix();return;}
+  const li=e.target.closest(".ligne,.slot[data-cle]");
+  if(li){ouvrir(li.dataset.cle);return;}
+  const vb=e.target.closest("[data-vue]");
+  if(vb){
+    if(vb.dataset.vue==="mois"){const l=dateDe(selLundi);vue=new Date(l.getFullYear(),l.getMonth(),1,12);}
+    S.vue=vb.dataset.vue;rendu();return;
+  }
+  const sm=e.target.closest("[data-sem]");
+  if(sm){selLundi=sm.dataset.sem;S.portee="semaine";rendu();return;}
+  const op=e.target.closest("[data-plat]");
+  if(op&&cible){
+    const v=op.dataset.plat;
+    if(v)S.repas[cible]=v;else delete S.repas[cible];
+    fermer();rendu();return;
+  }
+  const ty=e.target.closest("[data-type]");
+  if(ty){filtreType=ty.dataset.type;renduChoix();return;}
+  const pa=e.target.closest("[data-pays]");
+  if(pa){filtrePays=pa.dataset.pays;renduChoix();return;}
+  const po=e.target.closest("[data-portee]");
+  if(po){S.portee=po.dataset.portee;rendu();return;}
+  if(e.target.closest("#fermer")||e.target===$("#voile"))return fermer();
+  if(e.target.closest("#prec")||e.target.closest("#suiv")){
+    const pas=e.target.closest("#prec")?-1:1;
+    if(S.vue==="mois")vue=new Date(vue.getFullYear(),vue.getMonth()+pas,1,12);
+    else{const d=dateDe(selLundi);d.setDate(d.getDate()+7*pas);selLundi=iso(d);vue=new Date(d.getFullYear(),d.getMonth(),1,12);}
+    rendu();return;
+  }
+  if(e.target.closest("#retour")){const n=new Date();vue=new Date(n.getFullYear(),n.getMonth(),1,12);selLundi=iso(lundiDe(n));rendu();return;}
+  if(e.target.closest("#plus")){S.couverts=Math.min(12,S.couverts+1);rendu();return;}
+  if(e.target.closest("#moins")){S.couverts=Math.max(1,S.couverts-1);rendu();return;}
+  if(e.target.closest("#remplir"))return remplir();
+  if(e.target.closest("#effacer")){joursSemaine().forEach(j=>REPAS.forEach(([r])=>delete S.repas[j+"|"+r]));S.done["S:"+selLundi]=[];rendu();toast("Semaine vidée");return;}
+  if(e.target.closest("#decocher")){S.done[cleP()]=[];rendu();return;}
+  if(e.target.closest("#copier"))return copier();
+});
+$("#recherche").addEventListener("input",e=>{q=e.target.value.trim();renduChoix();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#voile").hidden)fermer();});
+$("#rayons").addEventListener("change",e=>{
+  const k=e.target.dataset.k;if(!k)return;
+  const d=coches();
+  S.done[cleP()]=e.target.checked?d.concat([k]):d.filter(x=>x!==k);
+  rendu();
+});
+
+function texte(){
+  const[a,b,titre]=bornes();
+  let s=titre.toUpperCase()+" — "+S.couverts+" couverts\n\n";
+  const d=dateDe(a),fin=dateDe(b);
+  for(let x=new Date(d);x<=fin;x.setDate(x.getDate()+1)){
+    const j=iso(x),m=S.repas[j+"|midi"],so=S.repas[j+"|soir"];
+    if(!m&&!so)continue;
+    const nom=id=>{const p=plat(id)||horsPlat(id);return p?p.nom:"—";};
+    s+=DOW[(x.getDay()+6)%7].toUpperCase()+" "+x.getDate()+" : "+(m?"midi "+nom(m):"")+(m&&so?" / ":"")+(so?"soir "+nom(so):"")+"\n";
+  }
+  const g=agreger(),done=coches();
+  RAYONS.forEach(([k,l])=>{
+    const items=(g[k]||[]).filter(i=>!done.includes(i.k));
+    if(!items.length)return;
+    s+="\n"+l.toUpperCase()+"\n";
+    items.forEach(it=>{s+="[ ] "+it.nom+" — "+quantite(it)+"\n";});
+  });
+  return s;
+}
+async function copier(){
+  if(!Object.keys(agreger()).length)return toast("Ajoute d'abord des plats");
+  const t=texte();
+  try{await navigator.clipboard.writeText(t);return toast("Liste copiée");}catch(e){}
+  try{
+    const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();
+    toast(ok?"Liste copiée":"Copie impossible — sélectionne la liste à la main");
+  }catch(e){toast("Copie impossible — sélectionne la liste à la main");}
+}
+
+rendu();
+initSync();
+</script>
+
+<button id="installer" hidden>Installer l'app</button>
+<script>
+// installation Android : on garde l'invite pour l'offrir au bon moment
+let invite = null;
+addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  invite = e;
+  document.getElementById("installer").hidden = false;
+});
+document.getElementById("installer").addEventListener("click", async () => {
+  document.getElementById("installer").hidden = true;
+  if (!invite) return;
+  invite.prompt();
+  await invite.userChoice;
+  invite = null;
+});
+addEventListener("appinstalled", () => { document.getElementById("installer").hidden = true; });
+
+if ("serviceWorker" in navigator) {
+  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
