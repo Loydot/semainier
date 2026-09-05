@@ -229,6 +229,25 @@ button{cursor:pointer}
 .ia-etat{font-size:12.5px;color:var(--ink-3);min-height:1.2em}
 .ia-etat.souci{color:var(--cuivre)}
 
+/* carnet de prix */
+.moinscher{display:block;margin-top:6px;font-size:13px;color:var(--accent);font-weight:600}
+.moinscher b{color:var(--ink)}
+.prix-tab{overflow:auto;max-height:60vh}
+.prix-tab table{border-collapse:collapse;width:100%;font-size:13.5px}
+.prix-tab th,.prix-tab td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.prix-tab th:first-child,.prix-tab td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);white-space:normal;min-width:150px}
+.prix-tab thead th{position:sticky;top:0;background:var(--surface);z-index:2;font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.09em;font-size:12px;color:var(--ink-2)}
+.prix-tab thead th:first-child{z-index:3}
+.prix-tab .q2{font-size:11.5px;color:var(--ink-3);display:block;font-variant-numeric:tabular-nums}
+.prix-tab input{width:74px;border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:5px 7px;font:inherit;text-align:right;font-variant-numeric:tabular-nums}
+.prix-tab input:focus{outline:0;border-color:var(--accent)}
+.prix-tab tfoot td{border-top:2px solid var(--line-strong);border-bottom:0;font-weight:700;font-variant-numeric:tabular-nums;padding-top:9px}
+.prix-tab tfoot .manque{display:block;font-weight:400;font-size:11.5px;color:var(--cuivre)}
+.prix-tab tfoot .gagnant{color:var(--accent)}
+.prix-tab tfoot .partiel{color:var(--ink-3);font-weight:400}
+.prix-tab tr.sansprix td:first-child{color:var(--ink-3)}
+.prix-info{padding:10px 18px 0;font-size:12.5px;color:var(--ink-3);line-height:1.45}
+
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:9px 17px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .saut{display:none}
@@ -291,10 +310,12 @@ button{cursor:pointer}
           <button data-portee="mois">Mois entier</button>
         </div>
         <span class="periode" id="periode"></span>
+        <span class="moinscher" id="moinscher" hidden></span>
       </div>
       <div class="rayons" id="rayons"></div>
       <div class="liste-foot">
         <button class="act" id="decocher">Tout décocher</button>
+        <button class="act" id="comparer">Comparer</button>
         <button class="act primaire" id="copier">Copier la liste</button>
       </div>
     </aside>
@@ -486,7 +507,7 @@ const AUJ=iso(new Date());
 
 /* ---------- état ---------- */
 const KEY="semainier-v2";
-let S={couverts:4,repas:{},done:{},portee:"semaine",vue:"mois",perso:[]};
+let S={couverts:4,repas:{},done:{},portee:"semaine",vue:"mois",perso:[],prix:{}};
 try{
   const s=JSON.parse(localStorage.getItem(KEY)||"null");
   if(s&&typeof s==="object")S=Object.assign(S,s);
@@ -498,7 +519,7 @@ try{
 if(!S.maj&&Object.keys(S.repas).length)S.maj=Date.now();
 
 /* ---------- enregistrement local + synchronisation du compte ---------- */
-const contenu=()=>JSON.stringify({couverts:S.couverts,repas:S.repas,done:S.done,perso:S.perso});
+const contenu=()=>JSON.stringify({couverts:S.couverts,repas:S.repas,done:S.done,perso:S.perso,prix:S.prix});
 let dernier=contenu(),REF=null,tSync=null;
 function etatSync(cls,txt){const n=document.getElementById("sync");if(n){n.className="sync "+cls;n.textContent=txt;}}
 function save(){
@@ -511,7 +532,7 @@ function pousser(){
   if(!REF)return;
   clearTimeout(tSync);
   tSync=setTimeout(()=>{
-    REF.set({maj:S.maj,couverts:S.couverts,repas:S.repas,done:S.done,perso:S.perso})
+    REF.set({maj:S.maj,couverts:S.couverts,repas:S.repas,done:S.done,perso:S.perso,prix:S.prix})
       .then(()=>etatSync("ok","Synchronisé"))
       .catch(()=>etatSync("souci","Enregistré ici seulement"));
   },700);
@@ -526,7 +547,7 @@ async function initSync(){
     if(!d){if(Object.keys(S.repas).length||S.perso.length){S.maj=S.maj||Date.now();pousser();}else etatSync("ok","Synchronisé");return;}
     const dm=d.maj||0;
     if(dm>(S.maj||0)){
-      S.couverts=d.couverts||S.couverts;S.repas=d.repas||{};S.done=d.done||{};S.perso=d.perso||[];S.maj=dm;
+      S.couverts=d.couverts||S.couverts;S.repas=d.repas||{};S.done=d.done||{};S.perso=d.perso||[];S.prix=d.prix||{};S.maj=dm;
       dernier=contenu();
       try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
       rendu();etatSync("ok","Synchronisé");
@@ -666,13 +687,14 @@ function renduListe(){
         <span class="q">${quantite(it)}</span></div>`;
     }).join("")+`</div>`).join("");
 }
-function rendu(){$("#npers").textContent=S.couverts;renduCal();renduListe();save();}
+function rendu(){$("#npers").textContent=S.couverts;renduCal();renduListe();renduMoinsCher();save();}
 
 /* ---------- sélecteur ---------- */
 let cible=null,filtrePays="tout",filtreType="plat",q="";
 const TYPES=[["plat","Plats"],["entree","Entrées"],["dessert","Desserts"],["tout","Tout"]];
 const typeDe=p=>p.type||"plat";
 function ouvrir(cle){
+  document.querySelector("#voile h2").textContent="Choisir un plat";
   cible=cle;q="";filtrePays="tout";
   const[j,r]=cle.split("|");
   $("#creneau").textContent=dateDe(j).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+" · "+(r==="midi"?"midi":"soir");
@@ -879,6 +901,77 @@ function supprimer(){
   fermer();rendu();toast("Recette supprimée");
 }
 
+/* ---------- carnet de prix ---------- */
+const ENSEIGNES=[["inter","Intermarché"],["lidl","Lidl"],["carrefour","Carrefour"],["leclerc","Leclerc"]];
+const uniteRef=u=>u==="g"?"kg":u==="ml"?"L":u;
+const enRef=(q,u)=>(u==="g"||u==="ml")?q/1000:q;   // quantité exprimée dans l'unité du prix
+const prixDe=(k,e)=>{const l=S.prix[k];return l&&typeof l[e]==="number"?l[e]:null;};
+
+function chiffrage(){
+  const g=agreger(),lignes=[];
+  RAYONS.forEach(([r])=>(g[r]||[]).forEach(it=>{
+    if(it.fixe)return;                              // épices et herbes : pas de quantité à chiffrer
+    lignes.push({k:it.k,nom:it.nom,u:it.u,q:enRef(arrondir(it.q,it.u),it.u)});
+  }));
+  const totaux={};
+  ENSEIGNES.forEach(([e])=>{
+    let somme=0,manque=0;
+    lignes.forEach(l=>{const p=prixDe(l.k,e);if(p===null)manque++;else somme+=p*l.q;});
+    totaux[e]={somme,manque,complet:lignes.length&&!manque};
+  });
+  return {lignes,totaux};
+}
+function euros(v){return v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";}
+
+function renduMoinsCher(){
+  const n=$("#moinscher");if(!n)return;
+  const{lignes,totaux}=chiffrage();
+  const complets=ENSEIGNES.filter(([e])=>totaux[e].complet);
+  if(!lignes.length||!complets.length){n.hidden=true;return;}
+  const tries=complets.map(([e,l])=>({e,l,v:totaux[e].somme})).sort((a,b)=>a.v-b.v);
+  const gagnant=tries[0];
+  const ecart=tries.length>1?tries[tries.length-1].v-gagnant.v:0;
+  n.hidden=false;
+  n.innerHTML=`Moins cher : <b>${gagnant.l} ${euros(gagnant.v)}</b>`+(ecart>0.005?` — ${euros(ecart)} d'écart avec le plus cher`:"");
+}
+
+function ouvrirPrix(){
+  const{lignes,totaux}=chiffrage();
+  if(!lignes.length){toast("Ajoute d'abord des plats au menu");return;}
+  $("#creneau").textContent="";
+  $("#recherche").hidden=true;$("#cuisines").hidden=true;$("#types").hidden=true;
+  document.querySelector("#voile h2").textContent="Comparer les enseignes";
+  cible=null;editId=null;
+  $("#choix").innerHTML=
+    `<p class="prix-info">Saisis le prix ${lignes.some(l=>l.u==="g"||l.u==="ml")?"<b>au kilo ou au litre</b>, ":""}ou à la pièce — une seule fois, il est mémorisé pour les listes suivantes. Un total ne s'affiche que si l'enseigne a tous les prix.</p>
+     <div class="prix-tab"><table>
+      <thead><tr><th>Article</th>${ENSEIGNES.map(([,l])=>`<th>${l}</th>`).join("")}</tr></thead>
+      <tbody>`+lignes.map(l=>{
+        const sans=ENSEIGNES.every(([e])=>prixDe(l.k,e)===null);
+        return `<tr class="${sans?"sansprix":""}"><td>${l.nom}<span class="q2">${(Math.round(l.q*100)/100).toString().replace(".",",")} ${uniteRef(l.u)} · prix / ${uniteRef(l.u)}</span></td>`+
+          ENSEIGNES.map(([e])=>{
+            const p=prixDe(l.k,e);
+            return `<td><input type="number" inputmode="decimal" step="0.01" min="0" data-prix="${l.k}" data-ens="${e}" value="${p===null?"":p}" aria-label="${l.nom} chez ${e}"></td>`;
+          }).join("")+`</tr>`;
+      }).join("")+
+      `</tbody><tfoot><tr id="prix-totaux"></tr></tfoot></table></div>`;
+  majTotaux();
+  $("#voile").hidden=false;
+}
+function majTotaux(){
+  const{lignes,totaux}=chiffrage();
+  const valeurs=ENSEIGNES.filter(([e])=>totaux[e].complet).map(([e])=>totaux[e].somme);
+  const mini=valeurs.length?Math.min(...valeurs):null;
+  const tr=$("#prix-totaux");if(!tr)return;
+  tr.innerHTML=`<td>Total du panier<span class="q2">${lignes.length} articles chiffrables</span></td>`+
+    ENSEIGNES.map(([e])=>{
+      const t=totaux[e];
+      const gagne=t.complet&&mini!==null&&Math.abs(t.somme-mini)<0.005;
+      const rien=t.manque===lignes.length;
+      return `<td class="${gagne?"gagnant":""} ${t.manque?"partiel":""}">${rien?"—":euros(t.somme)}${t.manque?`<span class="manque">${t.manque} prix manquant${t.manque>1?"s":""}</span>`:""}</td>`;
+    }).join("");
+}
+
 /* ---------- actions ---------- */
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2100);}
 function joursSemaine(){const a=dateDe(selLundi);return Array.from({length:7},(_,i)=>{const d=new Date(a);d.setDate(a.getDate()+i);return iso(d);});}
@@ -939,10 +1032,20 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#moins")){S.couverts=Math.max(1,S.couverts-1);rendu();return;}
   if(e.target.closest("#remplir"))return remplir();
   if(e.target.closest("#effacer")){joursSemaine().forEach(j=>REPAS.forEach(([r])=>delete S.repas[j+"|"+r]));S.done["S:"+selLundi]=[];rendu();toast("Semaine vidée");return;}
+  if(e.target.closest("#comparer"))return ouvrirPrix();
   if(e.target.closest("#decocher")){S.done[cleP()]=[];rendu();return;}
   if(e.target.closest("#copier"))return copier();
 });
 $("#recherche").addEventListener("input",e=>{q=e.target.value.trim();renduChoix();});
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(!t.dataset||!t.dataset.prix)return;
+  const k=t.dataset.prix,en=t.dataset.ens,v=parseFloat(String(t.value).replace(",","."));
+  S.prix[k]=S.prix[k]||{};
+  if(isNaN(v)||v<=0)delete S.prix[k][en];else S.prix[k][en]=Math.round(v*100)/100;
+  if(!Object.keys(S.prix[k]).length)delete S.prix[k];
+  majTotaux();renduMoinsCher();save();
+});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#voile").hidden)fermer();});
 $("#rayons").addEventListener("change",e=>{
   const k=e.target.dataset.k;if(!k)return;
